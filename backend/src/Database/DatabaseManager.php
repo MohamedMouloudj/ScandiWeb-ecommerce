@@ -2,10 +2,15 @@
 
 namespace App\Database;
 
+use Dotenv\Dotenv;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
+
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
 
 class DatabaseManager
 {
@@ -14,18 +19,14 @@ class DatabaseManager
     public static function getEntityManager(): EntityManager
     {
         if (self::$entityManager === null) {
-            // Setup Doctrine ORM
             $config = ORMSetup::createAttributeMetadataConfiguration(
                 paths: [__DIR__ . '/../Entity'],
                 isDevMode: true,
-                proxyDir: null,
-                cache: new ArrayAdapter()
             );
 
-            // Database connection parameters
             $connectionParams = [
                 'driver' => 'pdo_sqlite',
-                'path' => __DIR__ . '/../../database.sqlite',
+                'path' => __DIR__ . '/../../' . $_ENV['DB_NAME'] . '.sqlite',
             ];
 
             $connection = DriverManager::getConnection($connectionParams);
