@@ -34,15 +34,14 @@ class OrderItemResolvers extends BaseResolver
     {
         $selectedAttributes = $orderItem->getSelectedAttributes();
 
-        // Transform from stored format to GraphQL format
+
         $result = [];
-        foreach ($selectedAttributes as $attrSetId => $selectedValue) {
+        foreach ($selectedAttributes as $attr) {
             $result[] = [
-                'attributeSetId' => $attrSetId,
-                'selectedValue' => $selectedValue
+                'attributeSetId' => $attr['attributeSetId'],
+                'selectedValue' => $attr['selectedValue']
             ];
         }
-
         return $result;
     }
 }

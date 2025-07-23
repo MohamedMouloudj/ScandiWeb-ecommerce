@@ -30,14 +30,44 @@ class MutationResolvers extends BaseResolver
         try {
             $order = new Order();
             $order->setTotalAmount($input['totalAmount']);
-            $order->setCurrencyEntity($input['currencyEntity']); // Fixed method name
+            $currency = $this->em->getRepository(\App\Entity\Currency::class)->findOneBy(['label' => $input['currency']]);
+            if (!$currency) {
+                throw new \Exception('Currency not found: ' . $input['currency']);
+            }
+            $order->setCurrencyEntity($currency);
 
             $this->em->persist($order);
-            $this->em->flush(); // Flush to get order ID
+            $this->em->flush(); // --> order ID
 
             // Create order items
             foreach ($input['items'] as $itemInput) {
+                // error_log('DEBUG MutationResolvers: itemInput = ' . print_r($itemInput['selectedAttributes'], true));
                 $product = $this->findEntityOrThrow(Product::class, $itemInput['productId'], 'Product not found');
+
+                // Attribute selection verification
+                foreach ($itemInput['selectedAttributes'] as $selection) {
+                    $attributeSetId = $selection['attributeSetId'];
+                    $selectedValue = $selection['selectedValue'];
+
+                    // 1. Check attribute set is assigned to product
+                    $assigned = false;
+                    foreach ($product->getProductAttributes() as $pa) {
+                        if ($pa->getAttributeSet()->getId() === $attributeSetId) {
+                            $assigned = true;
+                            break;
+                        }
+                    }
+                    if (!$assigned) {
+                        throw new \Exception("Attribute set $attributeSetId is not assigned to product {$product->getId()}");
+                    }
+
+                    // 2. Check selectedValue exists in attributes for that set
+                    $attribute = $this->em->getRepository(\App\Entity\Attribute::class)
+                        ->findOneBy(['id' => $selectedValue, 'attributeSet' => $attributeSetId]);
+                    if (!$attribute) {
+                        throw new \Exception("Selected attribute $selectedValue is not valid for set $attributeSetId");
+                    }
+                }
 
                 $orderItem = new OrderItem();
                 $orderItem->setOrder($order);
@@ -51,7 +81,7 @@ class MutationResolvers extends BaseResolver
             $this->em->flush();
             $this->em->commit();
 
-            // Prime caches with the new order
+            // Cache the new order
             $this->loaderManager->orders()->prime('orders', $order->getId(), $order);
 
             return $order;

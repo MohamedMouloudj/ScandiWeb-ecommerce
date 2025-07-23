@@ -56,7 +56,7 @@ class GraphQLController
                         }
                     }
 
-                    // Return null if no resolver found
+                    // If no resolver found
                     return null;
                 };
             }
@@ -116,7 +116,7 @@ class GraphQLController
             'errors' => [
                 [
                     'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    // 'trace' => $e->getTraceAsString()
                 ]
             ]
         ]);

@@ -51,7 +51,7 @@ switch ($routeInfo[0]) {
                 'error' => 'Internal Server Error',
                 'message' => 'An error occurred while processing your request'
             ]);
-            error_log("Controller error: " . $e->getMessage() . " " . $e->getTraceAsString());
+            // error_log("Controller error: " . $e->getMessage() . " " . $e->getTraceAsString());
         }
         break;
 }

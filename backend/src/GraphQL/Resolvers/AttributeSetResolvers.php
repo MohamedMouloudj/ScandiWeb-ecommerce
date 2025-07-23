@@ -43,16 +43,18 @@ class AttributeSetResolvers extends BaseResolver
         return $attributeSet->getDisplayType();
     }
 
-    // Explicit field resolvers for Attribute type
-    public static function resolveAttributeId($attribute)
+    /**
+     * Resolvers for Attribute Entity
+     */
+    public function resolveAttributeId($attribute)
     {
         return $attribute->getId();
     }
-    public static function resolveAttributeDisplayValue($attribute)
+    public function resolveAttributeDisplayValue($attribute)
     {
         return $attribute->getDisplayValue();
     }
-    public static function resolveAttributeValue($attribute)
+    public function resolveAttributeValue($attribute)
     {
         return $attribute->getValue();
     }

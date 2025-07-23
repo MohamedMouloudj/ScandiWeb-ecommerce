@@ -12,7 +12,7 @@ class OrderDataLoader extends BaseDataLoader
     {
         // Load orders by IDs
         $this->createLoader('orders', function (array $orderIds): PromiseInterface {
-            echo "Loading orders: " . implode(', ', $orderIds) . "\n";
+            error_log("Loading orders: " . implode(', ', $orderIds) . "\n");
 
             $orders = $this->em->getRepository(Order::class)->findBy(['id' => $orderIds]);
 
@@ -27,7 +27,7 @@ class OrderDataLoader extends BaseDataLoader
 
         // Load order items by order IDs
         $this->createLoader('orderItems', function (array $orderIds): PromiseInterface {
-            echo "Loading order items for orders: " . implode(', ', $orderIds) . "\n";
+            // error_log("Loading order items for orders: " . implode(', ', $orderIds) . "\n");
 
             $orderItems = $this->em->getRepository(OrderItem::class)
                 ->createQueryBuilder('oi')

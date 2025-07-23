@@ -25,7 +25,7 @@ class Order
     #[ORM\Column(name: 'created_at', type: 'datetime')]
     private \DateTime $createdAt;
 
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['remove'], orphanRemoval: true)]
     private Collection $items;
 
     public function __construct()
@@ -94,7 +94,7 @@ class OrderItem
     #[ORM\Column(type: 'integer')]
     private int $quantity = 1;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(name: 'selected_attributes', type: 'json', nullable: true)]
     private array $selectedAttributes = [];
 
     // Getters
