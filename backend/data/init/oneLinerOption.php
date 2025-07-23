@@ -20,7 +20,7 @@ try {
     $choice = prompt("Choose database (mysql/sqlite): ");
 
     if ($choice === 'mysql') {
-        runMySQLFile($_ENV['DB_HOST'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME'], __DIR__ . '/../mysql.sql');
+        runMySQLFile($_ENV['DB_HOST'], $_ENV['DB_USER'], $_ENV['DB_PASS'], $_ENV['DB_NAME'], __DIR__ . '/../mysql.sql');
     } elseif ($choice === 'sqlite') {
         runSQLiteFile(__DIR__ . '/../../' . $_ENV['DB_NAME'] . '.sqlite', __DIR__ . '/../sqlite.sql');
     }

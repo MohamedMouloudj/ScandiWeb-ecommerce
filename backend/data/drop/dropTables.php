@@ -6,7 +6,7 @@ $config = [
     'host' => $_ENV['DB_HOST'],
     'database' => $_ENV['DB_NAME'],
     'username' => $_ENV['DB_USER'],
-    'password' => $_ENV['DB_PASSWORD'],
+    'password' => $_ENV['DB_PASS'],
     'sqliteDatabase' => __DIR__ . '/../../' . $_ENV['DB_NAME'] . '.sqlite'
 ];
 

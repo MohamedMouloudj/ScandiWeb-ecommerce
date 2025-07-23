@@ -66,17 +66,12 @@ class ColorAttribute extends Attribute
 {
     public function getDisplayFormat(): string
     {
-        return 'color-swatch';
+        return 'color';
     }
 
     public function isSelectable(): bool
     {
         return true;
-    }
-
-    public function getColorHex(): string
-    {
-        return $this->value; // Assuming value contains hex color
     }
 }
 
@@ -85,17 +80,11 @@ class SizeAttribute extends Attribute
 {
     public function getDisplayFormat(): string
     {
-        return 'size-button';
+        return 'size';
     }
 
     public function isSelectable(): bool
     {
         return true;
-    }
-
-    public function getSizeCategory(): string
-    {
-        // XS, S, M, L, XL or 40, 41, 42, etc.
-        return is_numeric($this->value) ? 'numeric' : 'text';
     }
 }

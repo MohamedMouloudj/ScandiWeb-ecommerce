@@ -4,6 +4,7 @@ namespace App\GraphQL\Resolvers;
 
 use App\Entity\AttributeSet;
 use App\Database\DataLoader\EcommerceDataLoaderManager;
+use App\Entity\Attribute;
 use Doctrine\ORM\EntityManagerInterface;
 
 class AttributeSetResolvers extends BaseResolver
@@ -22,7 +23,16 @@ class AttributeSetResolvers extends BaseResolver
     public function resolveItems(AttributeSet $attributeSet): array
     {
         $promise = $this->loaderManager->attributes()->loadAttributes($attributeSet->getId());
-        return $this->loaderManager->await($promise);
+        $attributesBatch = $this->loaderManager->await($promise);
+        $attributes = is_array($attributesBatch) && count($attributesBatch) === 1 && is_array($attributesBatch[0])
+            ? $attributesBatch[0]
+            : (is_array($attributesBatch) ? $attributesBatch : []);
+        return $attributes;
+    }
+
+    public function resolveAttribute(Attribute $attribute): Attribute
+    {
+        return $attribute;
     }
 
     /**
@@ -31,5 +41,19 @@ class AttributeSetResolvers extends BaseResolver
     public function resolveType(AttributeSet $attributeSet): string
     {
         return $attributeSet->getDisplayType();
+    }
+
+    // Explicit field resolvers for Attribute type
+    public static function resolveAttributeId($attribute)
+    {
+        return $attribute->getId();
+    }
+    public static function resolveAttributeDisplayValue($attribute)
+    {
+        return $attribute->getDisplayValue();
+    }
+    public static function resolveAttributeValue($attribute)
+    {
+        return $attribute->getValue();
     }
 }

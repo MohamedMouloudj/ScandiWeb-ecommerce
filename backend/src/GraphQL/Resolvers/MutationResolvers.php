@@ -25,11 +25,9 @@ class MutationResolvers extends BaseResolver
     {
         $input = $args['input'];
 
-        // Start transaction
         $this->em->beginTransaction();
 
         try {
-            // Create order
             $order = new Order();
             $order->setTotalAmount($input['totalAmount']);
             $order->setCurrencyEntity($input['currencyEntity']); // Fixed method name

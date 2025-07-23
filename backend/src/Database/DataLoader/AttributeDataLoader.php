@@ -11,15 +11,16 @@ class AttributeDataLoader extends BaseDataLoader
     {
         // Load attributes by attribute set IDs
         $this->createLoader('attributes', function (array $attributeSetIds): PromiseInterface {
-            echo "Loading attributes for attribute sets: " . implode(', ', $attributeSetIds) . "\n";
+            // error_log('DEBUG AttributeDataLoader: attributeSetIds = ' . json_encode(value: $attributeSetIds));
 
             $attributes = $this->em->getRepository(Attribute::class)
                 ->createQueryBuilder('a')
-                ->join('a.attributeSet', 'as')
-                ->where('as.id IN (:attributeSetIds)')
+                ->join('a.attributeSet', 'aset')
+                ->where('aset.id IN (:attributeSetIds)')
                 ->setParameter('attributeSetIds', $attributeSetIds)
                 ->getQuery()
                 ->getResult();
+
 
             $attributesByAttributeSet = [];
             foreach ($attributeSetIds as $attributeSetId) {

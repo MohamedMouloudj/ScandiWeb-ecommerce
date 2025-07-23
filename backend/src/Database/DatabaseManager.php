@@ -7,8 +7,6 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 
-
-
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
@@ -35,13 +33,5 @@ class DatabaseManager
         }
 
         return self::$entityManager;
-    }
-
-    public static function createSchema(): void
-    {
-        $em = self::getEntityManager();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $classes = $em->getMetadataFactory()->getAllMetadata();
-        $tool->createSchema($classes);
     }
 }

@@ -39,7 +39,7 @@ class ResolverManager
     }
 
     public function getResolverMap(): array
-    {
+    { // I removed scalar field resolvers to let GraphQL handle them automatically
         return [
             'Query' => [
                 'categories' => [$this->queryResolvers, 'getCategories'],
@@ -51,13 +51,12 @@ class ResolverManager
             ],
             'Category' => [
                 'products' => [$this->categoryResolvers, 'resolveProducts'],
-                // I removed scalar field resolvers - let GraphQL handle them automatically
             ],
             'Product' => [
                 'category' => [$this->productResolvers, 'resolveCategory'],
                 'gallery' => [$this->productResolvers, 'resolveGallery'],
                 'attributes' => [$this->productResolvers, 'resolveAttributes'],
-                'price' => [$this->productResolvers, 'resolvePrice'],
+                'prices' => [$this->productResolvers, 'resolvePrices'],
             ],
             'AttributeSet' => [
                 'items' => [$this->attributeSetResolvers, 'resolveItems'],
@@ -75,6 +74,11 @@ class ResolverManager
                 'id' => [$this->productImageResolvers, 'resolveId'],
                 'imageUrl' => [$this->productImageResolvers, 'resolveImageUrl'],
                 'sortOrder' => [$this->productImageResolvers, 'resolveSortOrder'],
+            ],
+            'Attribute' => [
+                'id' => [$this->attributeSetResolvers, 'resolveAttributeId'],
+                'displayValue' => [$this->attributeSetResolvers, 'resolveAttributeDisplayValue'],
+                'value' => [$this->attributeSetResolvers, 'resolveAttributeValue'],
             ],
         ];
     }

@@ -5,11 +5,7 @@ namespace App\GraphQL\Resolvers;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Database\DataLoader\EcommerceDataLoaderManager;
-use App\Entity\ProductAttribute;
-use App\Entity\ProductImage;
 use Doctrine\ORM\EntityManagerInterface;
-use ReflectionClass;
-use Exception;
 
 class ProductResolvers extends BaseResolver
 {
@@ -52,13 +48,22 @@ class ProductResolvers extends BaseResolver
     }
 
     /**
-     * Resolve price for a product
+     * Resolve prices for a product
      */
-    public function resolvePrice(Product $product): array
+    public function resolvePrices(Product $product): array
     {
-        return [
-            'amount' => $product->getPriceAmount(),
-            'currency' => $product->getPriceCurrencyEntity()?->getSymbol() ?? 'USD'
-        ];
+        $promise = $this->loaderManager->products()->loadProductPrices($product->getId());
+        $prices = $this->loaderManager->await($promise);
+
+        // This will map ProductPrice entities to the expected GraphQL format
+        return array_map(function ($price) {
+            return [
+                'amount' => $price->getAmount(),
+                'currency' => [
+                    'label' => $price->getCurrency()->getLabel(),
+                    'symbol' => $price->getCurrency()->getSymbol(),
+                ]
+            ];
+        }, $prices);
     }
 }

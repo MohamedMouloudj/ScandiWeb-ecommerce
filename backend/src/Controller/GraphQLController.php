@@ -37,13 +37,12 @@ class GraphQLController
                 $typeConfig['resolveField'] = function ($source, $args, $context, $info) use ($resolverMap, $typeName) {
                     $fieldName = $info->fieldName;
 
-                    // We check if we have a custom resolver for this field
                     if (isset($resolverMap[$typeName][$fieldName])) {
                         $resolver = $resolverMap[$typeName][$fieldName];
                         return call_user_func($resolver, $source, $args, $context, $info);
                     }
 
-                    // This is for scalar fields, try to resolve automatically using getter methods
+                    // For scalar fields, try to resolve automatically using getter methods
                     if (is_object($source)) {
                         $getter = 'get' . ucfirst($fieldName);
                         if (method_exists($source, $getter)) {

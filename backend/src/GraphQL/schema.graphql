@@ -21,14 +21,19 @@ type Product {
   description: String
   category: Category!
   brand: String
-  price: Price!
+  prices: [Price!]!
   gallery: [ProductImage!]!
   attributes: [AttributeSet!]!
 }
 
 type Price {
   amount: Float!
-  currency: String!
+  currency: Currency!
+}
+
+type Currency {
+  label: String!
+  symbol: String!
 }
 
 type ProductImage {

@@ -22,7 +22,6 @@ class EcommerceDataLoaderManager
     {
         $this->em = $em;
         $this->promiseAdapter = $promiseAdapter ?? new ReactPromiseAdapter();
-
         $this->initializeLoaders();
     }
 

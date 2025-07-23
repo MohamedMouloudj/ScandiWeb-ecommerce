@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
-    $r->post('/graphql', [GraphQLController::class, 'handle']);
+    $r->post('/gql', [GraphQLController::class, 'handle']);
 });
 
 $routeInfo = $dispatcher->dispatch(

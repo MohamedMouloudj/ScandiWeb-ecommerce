@@ -12,7 +12,7 @@ class CategoryDataLoader extends BaseDataLoader
     {
         // Load categories by IDs
         $this->createLoader('categories', function (array $categoryIds): PromiseInterface {
-            echo "Loading categories: " . implode(', ', $categoryIds) . "\n";
+            // error_log("Loading categories: " . implode(', ', $categoryIds) . "\n");
 
             $categories = $this->em->getRepository(Category::class)->findBy(['id' => $categoryIds]);
 
@@ -27,7 +27,7 @@ class CategoryDataLoader extends BaseDataLoader
 
         // Load products by category IDs
         $this->createLoader('productsByCategory', function (array $categoryIds): PromiseInterface {
-            echo "Loading products for categories: " . implode(', ', $categoryIds) . "\n";
+            // error_log("Loading products for categories: " . implode(', ', $categoryIds) . "\n");
 
             $products = $this->em->getRepository(Product::class)
                 ->createQueryBuilder('p')

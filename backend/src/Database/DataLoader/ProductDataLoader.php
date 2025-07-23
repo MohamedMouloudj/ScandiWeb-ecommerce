@@ -72,7 +72,7 @@ class ProductDataLoader extends BaseDataLoader
             $productAttributes = $this->em->getRepository(ProductAttribute::class)
                 ->createQueryBuilder('pa')
                 ->join('pa.product', 'p')
-                ->join('pa.attributeSet', 'as')
+                ->join('pa.attributeSet', 'aset')
                 ->where('p.id IN (:productIds)')
                 ->setParameter('productIds', $productIds)
                 ->getQuery()
@@ -92,6 +92,7 @@ class ProductDataLoader extends BaseDataLoader
 
             // Filter and group by product ID
             foreach ($productAttributes as $pa) {
+                // error_log('DEBUG ProductDataLoader.attributeSets $pa: ' . $pa->getAttributeSet()->getId());
                 $productId = $pa->getProduct()->getId();
                 if (in_array($productId, $productIds)) {
                     $attributeSet = $pa->getAttributeSet();
@@ -102,6 +103,29 @@ class ProductDataLoader extends BaseDataLoader
             }
 
             $result = array_map(fn($productId) => $attributeSetsByProduct[$productId], $productIds);
+            return $this->promiseAdapter->createFulfilled($result);
+        });
+
+        $this->createLoader('productPrices', function (array $productIds): PromiseInterface {
+            $qb = $this->em->getRepository(\App\Entity\ProductPrice::class)
+                ->createQueryBuilder('pp')
+                ->join('pp.product', 'p')
+                ->where('p.id IN (:productIds)')
+                ->setParameter('productIds', $productIds);
+
+            $prices = $qb->getQuery()->getResult();
+
+            $pricesByProduct = [];
+            foreach ($productIds as $productId) {
+                $pricesByProduct[$productId] = [];
+            }
+            foreach ($prices as $price) {
+                $productId = $price->getProduct()->getId();
+                if (isset($pricesByProduct[$productId])) {
+                    $pricesByProduct[$productId][] = $price;
+                }
+            }
+            $result = array_map(fn($productId) => $pricesByProduct[$productId], $productIds);
             return $this->promiseAdapter->createFulfilled($result);
         });
     }
@@ -124,5 +148,10 @@ class ProductDataLoader extends BaseDataLoader
     public function loadAttributeSets(string $productId): PromiseInterface
     {
         return $this->getLoader('attributeSets')->load($productId);
+    }
+
+    public function loadProductPrices(string $productId): PromiseInterface
+    {
+        return $this->getLoader('productPrices')->load($productId);
     }
 }

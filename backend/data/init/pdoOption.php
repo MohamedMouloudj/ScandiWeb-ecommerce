@@ -10,7 +10,7 @@ try {
             'host' => $_ENV['DB_HOST'],
             'database' => $_ENV['DB_NAME'],
             'username' => $_ENV['DB_USER'],
-            'password' => $_ENV['DB_PASSWORD']
+            'password' => $_ENV['DB_PASS']
         ];
 
         $mysqlExecutor = new DirectSQLExecutor('mysql', $mysqlConfig);

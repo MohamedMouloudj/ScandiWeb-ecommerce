@@ -33,12 +33,8 @@ class Product
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $brand = null;
 
-    #[ORM\Column(name: 'price_amount', type: 'decimal', precision: 10, scale: 2)]
-    protected float $priceAmount;
-
-    #[ORM\ManyToOne(targetEntity: Currency::class, inversedBy: 'products')]
-    #[ORM\JoinColumn(name: 'price_currency_id', referencedColumnName: 'id')]
-    protected ?Currency $priceCurrencyEntity = null;
+    #[ORM\OneToMany(targetEntity: ProductPrice::class, mappedBy: 'product', cascade: ['persist', 'remove'])]
+    private Collection $prices;
 
 
     #[ORM\Column(name: 'created_at', type: 'datetime')]
@@ -55,12 +51,13 @@ class Product
     {
         $this->gallery = new ArrayCollection();
         $this->productAttributes = new ArrayCollection();
+        $this->prices = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
-    public function getFormattedPrice(): string
+    public function getFormattedPrice(ProductPrice $price): string
     {
-        return number_format($this->priceAmount, 2);
+        return number_format($price->getAmount(), 2);
     }
 
     public function canAddToCart(): bool
@@ -98,19 +95,9 @@ class Product
     {
         return $this->brand;
     }
-    public function getPriceAmount(): float
+    public function getPrices(): Collection
     {
-        return $this->priceAmount;
-    }
-    public function getPriceCurrencyEntity(): ?Currency
-    {
-        return $this->priceCurrencyEntity;
-    }
-
-    public function setPriceCurrencyEntity(?Currency $priceCurrencyEntity): self
-    {
-        $this->priceCurrencyEntity = $priceCurrencyEntity;
-        return $this;
+        return $this->prices;
     }
 
     public function getGallery(): Collection
@@ -126,9 +113,9 @@ class Product
 #[ORM\Entity]
 class GeneralProduct extends Product
 {
-    public function getFormattedPrice(): string
+    public function getFormattedPrice(ProductPrice $price): string
     {
-        return number_format($this->priceAmount, 2) . ' ' . $this->priceCurrencyEntity->getSymbol();
+        return number_format($price->getAmount(), 2) . ' ' . $price->getCurrency()->getSymbol();
     }
 
     public function canAddToCart(): bool
@@ -147,9 +134,9 @@ class GeneralProduct extends Product
 #[ORM\Entity]
 class ClothingProduct extends Product
 {
-    public function getFormattedPrice(): string
+    public function getFormattedPrice(ProductPrice $price): string
     {
-        return number_format($this->priceAmount, 2) . ' ' . $this->priceCurrencyEntity->getSymbol();
+        return number_format($price->getAmount(), 2) . ' ' . $price->getCurrency()->getSymbol();
     }
 
     public function canAddToCart(): bool
@@ -176,9 +163,9 @@ class ClothingProduct extends Product
 #[ORM\Entity]
 class TechProduct extends Product
 {
-    public function getFormattedPrice(): string
+    public function getFormattedPrice(ProductPrice $price): string
     {
-        return $this->priceCurrencyEntity->getSymbol() . ' ' . number_format($this->priceAmount, 2);
+        return $price->getCurrency()->getSymbol() . ' ' . number_format($price->getAmount(), 2);
     }
 
     public function canAddToCart(): bool
