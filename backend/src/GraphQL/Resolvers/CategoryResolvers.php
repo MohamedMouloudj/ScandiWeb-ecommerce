@@ -21,6 +21,12 @@ class CategoryResolvers extends BaseResolver
      */
     public function resolveProducts(Category $category): array
     {
+        // If the category name is 'all', then we need to load all products
+        if (strtolower($category->getName()) === 'all') {
+            $promise = $this->loaderManager->products()->loadAllProducts();
+            $allProductsArr = $this->loaderManager->await($promise);
+            return $allProductsArr;
+        }
         $promise = $this->loaderManager->categories()->loadProductsByCategory($category->getId());
         return $this->loaderManager->await($promise);
     }

@@ -83,13 +83,17 @@ class GraphQLController
 
             return json_encode($result->toArray(DebugFlag::INCLUDE_DEBUG_MESSAGE));
         } catch (\Exception $e) {
-            return $this->handleError($e);
+            return $this->handleError($e, 400);
         }
     }
 
     private function parseRequest(): array
     {
         $input = json_decode(file_get_contents('php://input'), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Invalid JSON in request body');
+        }
 
         if (!isset($input['query'])) {
             throw new \Exception('GraphQL query is required');
@@ -107,9 +111,9 @@ class GraphQLController
         ];
     }
 
-    private function handleError(\Exception $e): string
+    private function handleError(\Exception $e, ?int $statusCode = 500): string
     {
-        http_response_code(500);
+        http_response_code($statusCode);
         header('Content-Type: application/json');
 
         return json_encode([

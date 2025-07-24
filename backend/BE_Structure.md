@@ -51,7 +51,7 @@ erDiagram
         int product_id FK
         string url
     }
-    ORDER {
+    "ORDER" {
         int id PK
         float total
         string status
@@ -63,13 +63,14 @@ erDiagram
         string symbol
     }
 
-    PRODUCT ||--o{ PRODUCT_ATTRIBUTE : "has"
-    PRODUCT ||--o{ PRODUCT_IMAGE : "has"
+    PRODUCT ||--o{ PRODUCT_ATTRIBUTE : has
+    PRODUCT ||--o{ PRODUCT_IMAGE : has
     PRODUCT }o--|| CATEGORY : "belongs to"
     CATEGORY ||--o{ CATEGORY : "parent of"
     ATTRIBUTE_SET ||--o{ ATTRIBUTE : "contains"
-    PRODUCT_ATTRIBUTE }o--|| ATTRIBUTE : "is"
-    ORDER }o--|| CURRENCY : "uses"
+    PRODUCT_ATTRIBUTE }o--|| ATTRIBUTE : is
+    "ORDER" }o--|| CURRENCY : uses
+
 ```
 
 ## Entities

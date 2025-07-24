@@ -128,6 +128,15 @@ class ProductDataLoader extends BaseDataLoader
             $result = array_map(fn($productId) => $pricesByProduct[$productId], $productIds);
             return $this->promiseAdapter->createFulfilled($result);
         });
+
+        // Loader for all products
+        $this->createLoader('allProducts', function (array $keys): PromiseInterface {
+            $products = $this->em->getRepository(Product::class)->findAll();
+            foreach ($products as $product) {
+                $this->em->initializeObject($product);
+            }
+            return $this->promiseAdapter->createFulfilled([$products]);
+        });
     }
 
     public function loadProduct(string $productId): PromiseInterface
@@ -153,5 +162,11 @@ class ProductDataLoader extends BaseDataLoader
     public function loadProductPrices(string $productId): PromiseInterface
     {
         return $this->getLoader('productPrices')->load($productId);
+    }
+
+    public function loadAllProducts(): PromiseInterface
+    {
+        // Always use the same key, e.g., 'all'
+        return $this->getLoader('allProducts')->load('all');
     }
 }
