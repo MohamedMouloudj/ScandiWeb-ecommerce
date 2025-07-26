@@ -5,20 +5,21 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
   },
-  plugins: [react(), tailwindcss()],
   base: "./",
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        entryFileNames: "assets/[name].[hash].js",
+        chunkFileNames: "assets/[name].[hash].js",
+        assetFileNames: "assets/[name].[hash].[ext]",
       },
     },
   },
