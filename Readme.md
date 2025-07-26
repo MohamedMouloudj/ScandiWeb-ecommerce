@@ -2,6 +2,10 @@
 
 A full-stack e-commerce application with GraphQL API backend and React frontend, built according to the [Scandiweb Junior Full-Stack Developer test task requirements](https://scandiweb.notion.site/Junior-Full-Stack-Developer-test-task-3833494124714845b71bf46096b6eeb9#a786a76ed71b453cb698c4a4a7cb1fc3).
 
+**Backend URI**: `https://sw-ecommerce.alwaysdata.net` (works only with this frontend origin)
+
+**Frontend URL**: `https://sw-ecommerce-fs.netlify.app/`
+
 ## Project Overview
 
 This project demonstrates a modern e-commerce solution with:
