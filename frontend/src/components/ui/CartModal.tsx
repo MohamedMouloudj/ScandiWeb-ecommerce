@@ -64,8 +64,7 @@ export default function CartModal() {
 
   return (
     <div
-      className="absolute top-full md:right-8 right-0 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80"
-      style={{ pointerEvents: "auto" }}
+      className="fixed top-16 right-0 md:right-8 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80"
       data-testid="cart-overlay"
     >
       {fetcher.state === "submitting" ? (
