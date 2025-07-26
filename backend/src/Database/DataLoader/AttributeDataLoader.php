@@ -39,6 +39,9 @@ class AttributeDataLoader extends BaseDataLoader
         });
     }
 
+    /**
+     * Loads attributes for a attribute set
+     */
     public function loadAttributes(string $attributeSetId): PromiseInterface
     {
         return $this->getLoader('attributes')->load($attributeSetId);

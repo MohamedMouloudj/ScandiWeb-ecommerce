@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'product_type', type: 'string')]
 #[ORM\DiscriminatorMap(['clothing' => ClothingProduct::class, 'tech' => TechProduct::class, 'general' => GeneralProduct::class])]
-class Product
+abstract class Product
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 255)]
@@ -57,7 +57,7 @@ class Product
 
     public function getFormattedPrice(ProductPrice $price): string
     {
-        return number_format($price->getAmount(), 2);
+        return number_format($price->getAmount(), 2) . ' ' . $price->getCurrency()->getSymbol();
     }
 
     public function canAddToCart(): bool
@@ -113,11 +113,6 @@ class Product
 #[ORM\Entity]
 class GeneralProduct extends Product
 {
-    public function getFormattedPrice(ProductPrice $price): string
-    {
-        return number_format($price->getAmount(), 2) . ' ' . $price->getCurrency()->getSymbol();
-    }
-
     public function canAddToCart(): bool
     {
         return $this->inStock;
@@ -134,10 +129,6 @@ class GeneralProduct extends Product
 #[ORM\Entity]
 class ClothingProduct extends Product
 {
-    public function getFormattedPrice(ProductPrice $price): string
-    {
-        return number_format($price->getAmount(), 2) . ' ' . $price->getCurrency()->getSymbol();
-    }
 
     public function canAddToCart(): bool
     {
@@ -155,22 +146,17 @@ class ClothingProduct extends Product
 
     private function hasRequiredAttributes(): bool
     {
-        // Check if product has size and color attributes
-        return true; // Implement your logic
+        // Check if product has size and color attributes, not in the assignment
+        return true;
     }
 }
 
 #[ORM\Entity]
 class TechProduct extends Product
 {
-    public function getFormattedPrice(ProductPrice $price): string
-    {
-        return $price->getCurrency()->getSymbol() . ' ' . number_format($price->getAmount(), 2);
-    }
-
     public function canAddToCart(): bool
     {
-        return $this->inStock; // Tech products don't need attribute selection
+        return $this->inStock;
     }
 
     public function getProductSpecificData(): array

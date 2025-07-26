@@ -31,7 +31,6 @@ abstract class AttributeSet
         $this->attributes = new ArrayCollection();
     }
 
-    abstract public function renderInput(): string;
     abstract public function validateValue(string $value): bool;
     abstract public function getDisplayType(): string;
 
@@ -57,10 +56,6 @@ abstract class AttributeSet
 #[ORM\Entity]
 class TextAttributeSet extends AttributeSet
 {
-    public function renderInput(): string
-    {
-        return 'text-input';
-    }
 
     public function validateValue(string $value): bool
     {
@@ -76,10 +71,7 @@ class TextAttributeSet extends AttributeSet
 #[ORM\Entity]
 class SwatchAttributeSet extends AttributeSet
 {
-    public function renderInput(): string
-    {
-        return 'swatch-selector';
-    }
+
 
     public function validateValue(string $value): bool
     {

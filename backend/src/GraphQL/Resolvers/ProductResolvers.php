@@ -39,7 +39,7 @@ class ProductResolvers extends BaseResolver
     }
 
     /**
-     * Resolve attributes for a product
+     * Resolve attribute sets for a product
      */
     public function resolveAttributes(Product $product): array
     {

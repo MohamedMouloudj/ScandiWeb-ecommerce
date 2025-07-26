@@ -78,7 +78,7 @@ class ClothingCategory extends Category
 
     public function getSpecialProperties(): array
     {
-        return ['hasSeasons' => true, 'hasSizes' => true];
+        return ['type' => 'clothing'];
     }
 }
 
@@ -92,7 +92,7 @@ class TechCategory extends Category
 
     public function getSpecialProperties(): array
     {
-        return ['hasWarranty' => true, 'hasSpecs' => true];
+        return ['type' => 'tech'];
     }
 }
 
@@ -106,6 +106,6 @@ class GeneralCategory extends Category
 
     public function getSpecialProperties(): array
     {
-        return [];
+        return ['type' => 'general'];
     }
 }

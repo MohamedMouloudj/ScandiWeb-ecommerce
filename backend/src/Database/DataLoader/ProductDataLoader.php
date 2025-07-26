@@ -78,7 +78,6 @@ class ProductDataLoader extends BaseDataLoader
                 ->getQuery()
                 ->getResult();
 
-            // Initialize all entities
             foreach ($productAttributes as $pa) {
                 $this->em->initializeObject($pa);
                 $this->em->initializeObject($pa->getProduct());
@@ -154,6 +153,9 @@ class ProductDataLoader extends BaseDataLoader
         return $this->getLoader('productImages')->load($productId);
     }
 
+    /**
+     * Loads attribute sets for a product
+     */
     public function loadAttributeSets(string $productId): PromiseInterface
     {
         return $this->getLoader('attributeSets')->load($productId);
