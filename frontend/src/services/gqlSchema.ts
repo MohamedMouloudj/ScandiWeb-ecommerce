@@ -12,8 +12,8 @@ export const GET_CATEGORIES = gql`
 
 // products by category
 export const GET_PRODUCTS_BY_CATEGORY = gql`
-  query GetProductsByCategory($categoryId: Int) {
-    products(categoryId: $categoryId) {
+  query GetProductsByCategory($categoryName: String) {
+    products(categoryName: $categoryName) {
       id
       name
       inStock

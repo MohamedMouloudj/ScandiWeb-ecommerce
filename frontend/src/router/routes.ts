@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
         loader: ({ params }) => productsByCategoryLoader({ params }),
       },
       {
-        path: "/category/:categoryId",
+        path: "/:categoryName",
         Component: ProductsList,
         loader: ({ params }) => productsByCategoryLoader({ params }),
       },

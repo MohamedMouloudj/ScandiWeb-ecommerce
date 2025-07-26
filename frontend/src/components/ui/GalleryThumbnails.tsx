@@ -10,7 +10,7 @@ export default function GalleryThumbnails({
   onSelect,
 }: GalleryThumbnailsProps) {
   return (
-    <div className="flex flex-col gap-2 overflow-y-auto max-h-[320px] md:max-h-[448px]">
+    <div className="flex flex-col gap-2 overflow-y-auto max-h-[320px] sm:max-h-[448px]">
       {images.map((img, idx) => (
         <img
           key={idx}

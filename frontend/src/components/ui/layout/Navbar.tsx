@@ -3,6 +3,7 @@ import {
   useLoaderData,
   useLocation,
   useNavigation,
+  useParams,
 } from "react-router";
 import Logo from "@/components/ui/Logo";
 import Cart from "@/components/ui/CartBtn";
@@ -15,13 +16,19 @@ type Category = {
 };
 
 export default function Navbar() {
-  const location = useLocation();
   const { categories, error } = useLoaderData();
+  const location = useLocation();
+  const { categoryName } = useParams();
+
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  const isActive = (category: Category) => {
+    if (category.name === "all") {
+      return location.pathname === "/" || !categoryName;
+    }
+
+    return categoryName === category.name;
   };
 
   return (
@@ -35,22 +42,22 @@ export default function Navbar() {
           <ul>
             {categories.map((category: Category) => {
               const activeRoute =
-                category.name === "all" ? "/" : `/category/${category.id}`;
+                category.name === "all" ? "/" : `/${category.name}`;
               return (
                 <li
                   key={category.id}
                   className={`${
-                    isActive(activeRoute) ? "border-b-2 border-primary" : ""
+                    isActive(category) ? "border-b-2 border-primary" : ""
                   }`}
                 >
                   <NavLink
                     to={activeRoute}
                     state={{ categoryName: category.name }}
                     className={`${
-                      isActive(activeRoute) ? "text-primary" : ""
+                      isActive(category) ? "text-primary" : ""
                     } h-full`}
                     data-testid={
-                      isActive(activeRoute)
+                      isActive(category)
                         ? "active-category-link"
                         : "category-link"
                     }

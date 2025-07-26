@@ -5,7 +5,7 @@ export default function CartBtn() {
   const showBubble = items.length > 0;
 
   return (
-    <div className="flex-1/3 flex justify-end">
+    <div className="flex-1/3 flex justify-end" data-testid="cart-btn">
       <button className="relative cursor-pointer p-2" onClick={toggleCart}>
         <img src="/images/EmptyCartDark.svg" alt="cart" className="w-6 h-6" />
         {showBubble && (

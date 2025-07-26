@@ -22,13 +22,13 @@ export const categoriesLoader = async () => {
 export const productsByCategoryLoader = async ({
   params,
 }: {
-  params: { categoryId?: string };
+  params: { categoryName?: string };
 }) => {
-  const { categoryId } = params;
+  const { categoryName } = params;
   try {
     const { data, error } = await apolloClient.query({
       query: GET_PRODUCTS_BY_CATEGORY,
-      variables: { categoryId: categoryId ? parseInt(categoryId) : null },
+      variables: { categoryName: categoryName || null },
     });
     if (error) {
       throw new Error("Failed to fetch products by category: " + error.message);

@@ -4,5 +4,6 @@
 vendor/
 .env
 .env.local
+.env.production
 sqlite.sql
 *.sqlite

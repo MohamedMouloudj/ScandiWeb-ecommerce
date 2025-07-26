@@ -90,7 +90,11 @@ const useCart = createSelectors(
             partialize: (state) => ({ items: state.items }),
           }
         )
-      )
+      ),
+      {
+        name: "cart",
+        enabled: process.env.NODE_ENV === "development",
+      }
     )
   )
 );

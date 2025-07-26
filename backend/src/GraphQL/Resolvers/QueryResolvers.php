@@ -40,13 +40,17 @@ class QueryResolvers extends BaseResolver
     {
         $qb = $this->em->getRepository(Product::class)->createQueryBuilder('p');
 
-
         if (isset($args['categoryId'])) {
             $category = $this->em->getRepository(Category::class)->find($args['categoryId']);
             $qb->join('p.category', 'c')
                 ->where('c.id = :categoryId')
                 ->setParameter('categoryId', $args['categoryId']);
+        } elseif (isset($args['categoryName']) && $args['categoryName'] !== null && $args['categoryName'] !== 'all') {
+            $qb->join('p.category', 'c')
+                ->where('c.name = :categoryName')
+                ->setParameter('categoryName', $args['categoryName']);
         }
+        // If categoryName is 'all' or null, return all products (no filter)
 
         $products = $qb->getQuery()->getResult();
 

@@ -35,7 +35,10 @@ export default function GalleryCarousel({
   };
 
   return (
-    <div className="flex gap-4" data-testid="product-gallery">
+    <div
+      className="flex gap-4 max-h-[320px] sm:max-h-[448px]"
+      data-testid="product-gallery"
+    >
       <GalleryThumbnails
         images={images}
         selectedIdx={mainIdx}

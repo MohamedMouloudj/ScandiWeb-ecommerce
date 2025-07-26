@@ -1,6 +1,6 @@
 type Query {
   categories: [Category!]!
-  products(categoryId: Int): [Product!]!
+  products(categoryId: Int, categoryName: String): [Product!]!
   product(id: String!): Product
 }
 
