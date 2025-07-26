@@ -83,7 +83,7 @@ export default function ProductDetails() {
                     return (
                       <TextAttribute
                         key={item.id}
-                        attributeSetId={attributeSet.id}
+                        attributeSet={attributeSet}
                         attribute={item}
                         selected={
                           selectedAttributes.find(
@@ -99,7 +99,7 @@ export default function ProductDetails() {
                     return (
                       <SwatchAttribute
                         key={item.id}
-                        attributeSetId={attributeSet.id}
+                        attributeSet={attributeSet}
                         attribute={item}
                         selected={
                           selectedAttributes.find(

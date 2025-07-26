@@ -11,15 +11,29 @@ export default function GalleryCarousel({
   productName: string;
 }) {
   const [mainIdx, setMainIdx] = useState(0);
-  const mainImage = images[mainIdx];
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handlePrev = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setMainIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setTimeout(() => setIsTransitioning(false), 300);
   };
+
   const handleNext = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setMainIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setTimeout(() => setIsTransitioning(false), 300);
   };
-  const handleSelect = (idx: number) => setMainIdx(idx);
+
+  const handleSelect = (idx: number) => {
+    if (isTransitioning || idx === mainIdx) return;
+    setIsTransitioning(true);
+    setMainIdx(idx);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
   return (
     <div className="flex gap-4" data-testid="product-gallery">
       <GalleryThumbnails
@@ -27,16 +41,37 @@ export default function GalleryCarousel({
         selectedIdx={mainIdx}
         onSelect={handleSelect}
       />
-      <div className="relative flex-center">
-        <button className="carousel-button left-2" onClick={handlePrev}>
+      <div className="relative flex-center overflow-hidden">
+        <button
+          className="carousel-button left-2 z-10"
+          onClick={handlePrev}
+          disabled={isTransitioning}
+        >
           <ChevronLeftIcon className="w-6 h-6" />
         </button>
-        <img
-          src={mainImage.imageUrl}
-          alt={productName}
-          className="w-sm h-[320px] sm:w-lg sm:h-[448px] object-contain rounded"
-        />
-        <button className="carousel-button right-2" onClick={handleNext}>
+
+        <div className="relative w-sm h-[320px] sm:w-lg sm:h-[448px]">
+          {images.map((image, idx) => (
+            <img
+              key={idx}
+              src={image.imageUrl}
+              alt={`${productName} - Image ${idx + 1}`}
+              className={`absolute inset-0 w-full h-full object-contain rounded transition-transform duration-300 ease-in-out ${
+                idx === mainIdx
+                  ? "translate-x-0"
+                  : idx < mainIdx
+                  ? "-translate-x-full"
+                  : "translate-x-full"
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          className="carousel-button right-2 z-10"
+          onClick={handleNext}
+          disabled={isTransitioning}
+        >
           <ChevronRightIcon className="w-6 h-6" />
         </button>
       </div>

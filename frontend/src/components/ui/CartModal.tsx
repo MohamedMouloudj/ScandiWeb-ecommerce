@@ -4,6 +4,7 @@ import {
   CURRENCY_LABEL,
   getPriceWithSymbol,
   getThumbnail,
+  toKebabCase,
 } from "@/utils/helpers";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useFetcher, useActionData } from "react-router";
@@ -95,32 +96,37 @@ export default function CartModal() {
                             <div className="text-sm font-normal text-neutral-black font-primary">
                               {attrSet.name}:
                             </div>
-                            <div className="flex gap-2 p-1 flex-wrap">
+                            <div
+                              className="flex gap-2 p-1 flex-wrap"
+                              data-testid={`cart-item-attribute-${toKebabCase(
+                                attrSet.name
+                              )}`}
+                            >
                               {attrSet.type === "TEXT"
                                 ? attrSet.items.map((attr) => (
                                     <TextAttribute
                                       key={attr.id}
-                                      attributeSetId={attrSet.id}
+                                      attributeSet={attrSet}
                                       attribute={attr}
                                       selected={
                                         item.selectedAttributes.find(
                                           (a) => a.attributeSetId === attrSet.id
                                         )?.selectedValue === attr.id
                                       }
-                                      small={true}
+                                      inCart={true}
                                     />
                                   ))
                                 : attrSet.items.map((attr) => (
                                     <SwatchAttribute
                                       key={attr.id}
-                                      attributeSetId={attrSet.id}
+                                      attributeSet={attrSet}
                                       attribute={attr}
                                       selected={
                                         item.selectedAttributes.find(
                                           (a) => a.attributeSetId === attrSet.id
                                         )?.selectedValue === attr.id
                                       }
-                                      small={true}
+                                      inCart={true}
                                     />
                                   ))}
                             </div>
@@ -132,13 +138,17 @@ export default function CartModal() {
                         <button
                           className="border cursor-pointer flex-center w-6 h-6"
                           onClick={() => updateItemQuantity(item.id, -1)}
+                          data-testid="cart-item-amount-decrease"
                         >
                           <MinusIcon className="w-4 h-4" />
                         </button>
-                        <span>{item.quantity}</span>
+                        <span data-testid="cart-item-amount">
+                          {item.quantity}
+                        </span>
                         <button
                           className="border cursor-pointer flex-center w-6 h-6"
                           onClick={() => updateItemQuantity(item.id, 1)}
+                          data-testid="cart-item-amount-increase"
                         >
                           <PlusIcon className="w-4 h-4" />
                         </button>
@@ -155,7 +165,10 @@ export default function CartModal() {
                 );
               })}
             </div>
-            <div className="flex justify-between items-center font-primary font-bold text-lg">
+            <div
+              className="flex justify-between items-center font-primary font-bold text-lg"
+              data-testid="cart-total"
+            >
               <span>Total</span>
               <span>{totalPrice}</span>
             </div>
