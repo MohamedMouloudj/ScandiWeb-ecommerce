@@ -8,7 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'attributes')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'attr_type', type: 'string')]
-#[ORM\DiscriminatorMap(['text' => TextAttribute::class, 'color' => ColorAttribute::class, 'size' => SizeAttribute::class])]
+#[ORM\DiscriminatorMap([
+    'text' => TextAttribute::class,
+    'color' => ColorAttribute::class,
+    'size' => SizeAttribute::class
+])]
 abstract class Attribute
 {
     #[ORM\Id]
@@ -44,47 +48,5 @@ abstract class Attribute
     public function getValue(): string
     {
         return $this->value;
-    }
-}
-
-#[ORM\Entity]
-class TextAttribute extends Attribute
-{
-    public function getDisplayFormat(): string
-    {
-        return 'text';
-    }
-
-    public function isSelectable(): bool
-    {
-        return true;
-    }
-}
-
-#[ORM\Entity]
-class ColorAttribute extends Attribute
-{
-    public function getDisplayFormat(): string
-    {
-        return 'color';
-    }
-
-    public function isSelectable(): bool
-    {
-        return true;
-    }
-}
-
-#[ORM\Entity]
-class SizeAttribute extends Attribute
-{
-    public function getDisplayFormat(): string
-    {
-        return 'size';
-    }
-
-    public function isSelectable(): bool
-    {
-        return true;
     }
 }

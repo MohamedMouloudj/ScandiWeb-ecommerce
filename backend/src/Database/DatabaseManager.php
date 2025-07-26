@@ -2,13 +2,9 @@
 
 namespace App\Database;
 
-use Dotenv\Dotenv;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
-$dotenv->load();
 
 class DatabaseManager
 {

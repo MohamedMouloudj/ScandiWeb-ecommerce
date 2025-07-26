@@ -30,7 +30,8 @@ class MutationResolvers extends BaseResolver
         try {
             $order = new Order();
             $order->setTotalAmount($input['totalAmount']);
-            $currency = $this->em->getRepository(\App\Entity\Currency::class)->findOneBy(['label' => $input['currency']]);
+            $currency = $this->em->getRepository(\App\Entity\Currency::class)
+                ->findOneBy(['label' => $input['currency']]);
             if (!$currency) {
                 throw new \Exception('Currency not found: ' . $input['currency']);
             }
@@ -42,7 +43,11 @@ class MutationResolvers extends BaseResolver
             // Create order items
             foreach ($input['items'] as $itemInput) {
                 // error_log('DEBUG MutationResolvers: itemInput = ' . print_r($itemInput['selectedAttributes'], true));
-                $product = $this->findEntityOrThrow(Product::class, $itemInput['productId'], 'Product not found');
+                $product = $this->findEntityOrThrow(
+                    Product::class,
+                    $itemInput['productId'],
+                    'Product not found'
+                );
 
                 // Attribute selection verification
                 foreach ($itemInput['selectedAttributes'] as $selection) {
@@ -58,14 +63,18 @@ class MutationResolvers extends BaseResolver
                         }
                     }
                     if (!$assigned) {
-                        throw new \Exception("Attribute set $attributeSetId is not assigned to product {$product->getId()}");
+                        throw new \Exception(
+                            "Attribute set $attributeSetId is not assigned to product {$product->getId()}"
+                        );
                     }
 
                     // 2. Check selectedValue exists in attributes for that set
                     $attribute = $this->em->getRepository(\App\Entity\Attribute::class)
                         ->findOneBy(['id' => $selectedValue, 'attributeSet' => $attributeSetId]);
                     if (!$attribute) {
-                        throw new \Exception("Selected attribute $selectedValue is not valid for set $attributeSetId");
+                        throw new \Exception(
+                            "Selected attribute $selectedValue is not valid for set $attributeSetId"
+                        );
                     }
                 }
 

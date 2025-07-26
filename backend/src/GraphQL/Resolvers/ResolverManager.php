@@ -39,7 +39,8 @@ class ResolverManager
     }
 
     public function getResolverMap(): array
-    { // I removed scalar field resolvers to let GraphQL handle them automatically, they are handled by Controller
+    {
+ // I removed scalar field resolvers to let GraphQL handle them automatically, they are handled by Controller
         return [
             'Query' => [
                 'categories' => [$this->queryResolvers, 'getCategories'],

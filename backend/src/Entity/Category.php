@@ -12,7 +12,11 @@ use Doctrine\Common\Collections\Collection;
 #[ORM\Table(name: 'categories')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap(['clothing' => ClothingCategory::class, 'tech' => TechCategory::class, 'general' => GeneralCategory::class])]
+#[ORM\DiscriminatorMap([
+    'clothing' => ClothingCategory::class,
+    'tech' => TechCategory::class,
+    'general' => GeneralCategory::class
+])]
 abstract class Category
 {
     #[ORM\Id]
@@ -65,47 +69,5 @@ abstract class Category
     {
         $this->id = $id;
         return $this;
-    }
-}
-
-#[ORM\Entity]
-class ClothingCategory extends Category
-{
-    public function getDisplayName(): string
-    {
-        return ucfirst($this->name) . ' Clothing';
-    }
-
-    public function getSpecialProperties(): array
-    {
-        return ['type' => 'clothing'];
-    }
-}
-
-#[ORM\Entity]
-class TechCategory extends Category
-{
-    public function getDisplayName(): string
-    {
-        return $this->name . ' Tech';
-    }
-
-    public function getSpecialProperties(): array
-    {
-        return ['type' => 'tech'];
-    }
-}
-
-#[ORM\Entity]
-class GeneralCategory extends Category
-{
-    public function getDisplayName(): string
-    {
-        return $this->name;
-    }
-
-    public function getSpecialProperties(): array
-    {
-        return ['type' => 'general'];
     }
 }
