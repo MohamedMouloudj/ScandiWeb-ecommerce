@@ -7,8 +7,8 @@ import {
 } from "react-router";
 import Logo from "@/components/ui/Logo";
 import Cart from "@/components/ui/CartBtn";
-import Spinner from "../Spinner";
-import CartModal from "../CartModal";
+import Spinner from "@/components/ui/Spinner";
+import CartModal from "@/components/ui/CartModal";
 
 type Category = {
   id: number;
@@ -25,7 +25,11 @@ export default function Navbar() {
 
   const isActive = (category: Category) => {
     if (category.name === "all") {
-      return location.pathname === "/" || !categoryName;
+      return (
+        location.pathname === "/" ||
+        location.pathname === "/all" ||
+        !categoryName
+      );
     }
 
     return categoryName === category.name;
@@ -41,8 +45,6 @@ export default function Navbar() {
         ) : (
           <ul>
             {categories.map((category: Category) => {
-              const activeRoute =
-                category.name === "all" ? "/" : `/${category.name}`;
               return (
                 <li
                   key={category.id}
@@ -51,7 +53,7 @@ export default function Navbar() {
                   }`}
                 >
                   <NavLink
-                    to={activeRoute}
+                    to={`/${category.name}`}
                     state={{ categoryName: category.name }}
                     className={`${
                       isActive(category) ? "text-primary" : ""

@@ -49,6 +49,9 @@ export default function TextAttribute({
         selected ? "bg-neutral-black" : "bg-background"
       }`}
       onClick={() => onSelect?.(attributeSet.id, attribute.id)}
+      data-testid={`product-attribute-${toKebabCase(attributeSet.name)}-${
+        attribute.value
+      }`}
     >
       <span
         className={`${"text-md"} font-attribute-value font-normal ${

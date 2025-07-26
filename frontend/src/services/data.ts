@@ -74,7 +74,16 @@ export const placeOrder = async ({ request }: { request: Request }) => {
         input: orderData,
       },
     });
-    return { data: data.placeOrder, error: errors };
+
+    if (errors) {
+      return { error: errors };
+    }
+
+    if (data?.placeOrder) {
+      return { success: true, data: data.placeOrder };
+    }
+
+    return { error: "Failed to place order" };
   } catch (error) {
     console.error("Error placing order:", error);
     return { error: "Failed to place order" };

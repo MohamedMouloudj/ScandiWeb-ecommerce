@@ -1,6 +1,6 @@
 import type { Product } from "@/types/Product";
 import { useLoaderData } from "react-router";
-import { getPriceWithSymbol, stripHtml, toKebabCase } from "@/utils/helpers";
+import { getPriceWithSymbol, stripHtml } from "@/utils/helpers";
 import GalleryCarousel from "@/components/ui/GalleryCarousel";
 import SwatchAttribute from "@/components/ui/SwatchAttribute";
 import TextAttribute from "@/components/ui/TextAttribute";
@@ -74,9 +74,6 @@ export default function ProductDetails() {
                 className={`flex flex-wrap ${
                   attributeSet.type === "TEXT" ? "gap-4" : "gap-2"
                 }`}
-                data-testid={`product-attribute-${toKebabCase(
-                  attributeSet.name
-                )}`}
               >
                 {attributeSet.items.map((item) => {
                   if (attributeSet.type === "TEXT") {

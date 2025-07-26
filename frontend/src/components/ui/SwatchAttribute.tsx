@@ -43,6 +43,9 @@ export default function SwatchAttribute({
       }`}
       style={{ backgroundColor: attribute.value }}
       onClick={() => onSelect?.(attributeSet.id, attribute.id)}
+      data-testid={`product-attribute-${toKebabCase(attributeSet.name)}-${
+        attribute.value
+      }`}
     />
   );
 }
