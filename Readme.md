@@ -10,6 +10,7 @@ This project demonstrates a modern e-commerce solution with:
 - **Frontend**: React TypeScript application with modern tooling
 - **Database**: MySQL
 - **Architecture**: Clean separation of concerns with proper data loading and caching
+- **Code Quality**: Respected PSR-4. PSR-1 and PSR-12 compliant with automated linting
 
 ## Project Structure
 
@@ -23,6 +24,7 @@ SW/
 │   │   └── GraphQL/        # GraphQL schema & resolvers
 │   ├── database/           # Production database migrations
 │   ├── dev-database/       # Development database schemas
+│   ├── bootstrap.php       # Environment and autoloader setup
 │   └── public/             # Web server entry point
 └── frontend/               # React TypeScript application
     └── src/                # React components & logic
@@ -40,6 +42,34 @@ SW/
 - **React Promise**: Asynchronous promise handling for PHP
 - **Nikic Fast Route**: High-performance routing library (not a framework, just a routing library)
 - **Composer**: Dependency management
+
+### Code Quality & Standards
+
+The backend follows strict PHP coding standards:
+
+- **PSR-1**: Basic Coding Standard (no side effects in class files)
+- **PSR-12**: Extended Coding Style (line length, formatting, etc.)
+- **OOP Principles**: Proper object-oriented design patterns
+- **Clean Architecture**: Separation of concerns and maintainable code
+
+#### Linting Commands
+
+```bash
+# Check code quality (PSR-1 and PSR-12)
+composer lint
+
+# Auto-fix formatting issues (where possible)
+composer lint-fix
+```
+
+#### Bootstrap Architecture
+
+The project uses a centralized bootstrap approach for environment management:
+
+- **`bootstrap.php`**: Centralized environment loading and autoloader setup
+- **PSR-1 Compliance**: No side effects in class files
+- **Clean Separation**: Environment setup separated from business logic
+- **Consistent Loading**: All entry points use the same bootstrap process
 
 ### Database Schema
 
@@ -290,7 +320,17 @@ frontend/src/
    composer install
    ```
 
-2. **Database Setup**
+2. **Environment Configuration**
+
+   ```bash
+   # Copy and configure environment file
+   cp .env.example .env
+   # Edit .env with your MySQL credentials
+   ```
+
+   The project uses a centralized bootstrap approach (`bootstrap.php`) for environment loading, ensuring PSR-1 compliance.
+
+3. \*\*Database Setup
 
    **Option 1: Direct MySQL Import**
 
@@ -301,15 +341,7 @@ frontend/src/
 
    **Option 2: PHP Initialization Scripts**
 
-   First, set up your environment:
-
-   ```bash
-   # Copy and configure environment file
-   cp .env.example .env
-   # Edit .env with your MySQL credentials
-   ```
-
-   Then run one of the initialization scripts:
+   Run one of the initialization scripts (environment should be configured in step 2):
 
    ```bash
    # Command line option (interactive)
@@ -328,7 +360,17 @@ frontend/src/
    php database/migrate.php
    ```
 
-3. **Start Development Server**
+4. **Code Quality Checks**
+
+   ```bash
+   # Check code quality (PSR-1 and PSR-12)
+   composer lint
+
+   # Auto-fix formatting issues (where possible)
+   composer lint-fix
+   ```
+
+5. **Start Development Server**
 
    ```bash
    php -S localhost:8000 -t public
@@ -357,6 +399,13 @@ frontend/src/
 
 ## Development Notes
 
+### Development Workflow
+
+1. **Code Quality**: Always run `composer lint` before committing
+2. **Auto-fix**: Use `composer lint-fix` to automatically fix formatting issues
+3. **Bootstrap**: All PHP files should use `require_once __DIR__ . '/../../bootstrap.php';` for environment loading
+4. **PSR Compliance**: Maintain PSR-4, PSR-1 and PSR-12 standards throughout the codebase
+
 ### Technology Choices Explained
 
 **Backend:**
@@ -367,6 +416,7 @@ frontend/src/
 - **React Promise**: Asynchronous promise handling for PHP operations
 - **Nikic Fast Route**: High-performance routing library, not a framework - just a routing library
 - **Doctrine ORM**: Provides robust database abstraction and query optimization
+- **Bootstrap Architecture**: Centralized environment loading with PSR-1 compliance
 
 **Frontend:**
 
@@ -390,7 +440,7 @@ frontend/src/
 This project strictly adheres to the [Scandiweb test task requirements](https://scandiweb.notion.site/Junior-Full-Stack-Developer-test-task-3833494124714845b71bf46096b6eeb9#a786a76ed71b453cb698c4a4a7cb1fc3):
 
 - ✅ No frameworks used (only libraries and components)
-- ✅ Followed requested PSRs (PSR-1, PSR-12) for coding standards
+- ✅ Followed requested PSRs (PSR-1, PSR-12, PSR-4) for coding standards
 - ✅ Strictly followed OOP principles in backend development
 - ✅ GraphQL API
 - ✅ Modern React with TypeScript
