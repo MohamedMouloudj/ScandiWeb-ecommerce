@@ -66,6 +66,7 @@ export default function CartModal() {
     <div
       className="absolute top-full md:right-8 right-0 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80"
       style={{ pointerEvents: "auto" }}
+      data-testid="cart-overlay"
     >
       {fetcher.state === "submitting" ? (
         <div className="flex-center h-full">
@@ -73,128 +74,116 @@ export default function CartModal() {
         </div>
       ) : error ? (
         <Error error={error} setError={setError} />
+      ) : successMessage ? (
+        <div className="flex-center h-full">
+          <div className="text-center flex-center">
+            <CheckIcon className="w-6 h-6 text-green-600" />
+            <div className="text-green-600 font-medium text-md">
+              {successMessage}
+            </div>
+          </div>
+        </div>
       ) : (
-        <div data-testid="cart-overlay">
-          <div className="flex flex-col gap-8 ">
-            {successMessage ? (
-              <div className="flex-center h-full">
-                <div className="text-center flex-center">
-                  <CheckIcon className="w-6 h-6 text-green-600" />
-                  <div className="text-green-600 font-medium text-md">
-                    {successMessage}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <h2 className="font-primary text-md text-neutral-black mb-4">
-                  <span className="font-bold">My Bag, </span>
-                  <span className="font-medium">
-                    {items.length} {items.length === 1 ? "Item" : "Items"}
-                  </span>
-                </h2>
-                <div className="flex flex-col gap-10 md:max-h-[40vh] max-h-[50vh] overflow-y-auto">
-                  {items.map((item, idx) => {
-                    const price = getPriceWithSymbol({
-                      prices: item.product.prices,
-                      quantity: item.quantity,
-                    });
-                    return (
-                      <div
-                        key={idx}
-                        className="flex gap-2 items-stretch max-w-2xs"
-                      >
-                        <div className="flex gap-1 justify-between w-full">
-                          <div className="flex flex-col gap-2">
-                            <div className="flex flex-col gap-2">
-                              <h3 className="font-primary font-light text-lg text-neutral-black">
-                                {item.product.name}
-                              </h3>
-                              <div className="font-primary font-bold text-md text-neutral-black">
-                                {price}
-                              </div>
+        <>
+          <div className="flex flex-col gap-8">
+            <h2 className="font-primary text-md text-neutral-black mb-4">
+              <span className="font-bold">My Bag, </span>
+              <span className="font-medium">
+                {items.length} {items.length === 1 ? "Item" : "Items"}
+              </span>
+            </h2>
+            <div className="flex flex-col gap-10 md:max-h-[40vh] max-h-[50vh] overflow-y-auto">
+              {items.map((item, idx) => {
+                const price = getPriceWithSymbol({
+                  prices: item.product.prices,
+                  quantity: item.quantity,
+                });
+                return (
+                  <div key={idx} className="flex gap-2 items-stretch max-w-2xs">
+                    <div className="flex gap-1 justify-between w-full">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2">
+                          <h3 className="font-primary font-light text-lg text-neutral-black">
+                            {item.product.name}
+                          </h3>
+                          <div className="font-primary font-bold text-md text-neutral-black">
+                            {price}
+                          </div>
+                        </div>
+                        {item.product.attributes?.map((attrSet) => (
+                          <div key={attrSet.id} className="flex flex-col gap-1">
+                            <div className="text-sm font-normal text-neutral-black font-primary">
+                              {attrSet.name}:
                             </div>
-                            {item.product.attributes?.map((attrSet) => (
-                              <div
-                                key={attrSet.id}
-                                className="flex flex-col gap-1"
-                              >
-                                <div className="text-sm font-normal text-neutral-black font-primary">
-                                  {attrSet.name}:
-                                </div>
-                                <div
-                                  className="flex gap-2 p-1 flex-wrap"
-                                  data-testid={`cart-item-attribute-${toKebabCase(
-                                    attrSet.name
-                                  )}`}
-                                >
-                                  {attrSet.type === "TEXT"
-                                    ? attrSet.items.map((attr) => (
-                                        <TextAttribute
-                                          key={attr.id}
-                                          attributeSet={attrSet}
-                                          attribute={attr}
-                                          selected={
-                                            item.selectedAttributes.find(
-                                              (a) =>
-                                                a.attributeSetId === attrSet.id
-                                            )?.selectedValue === attr.id
-                                          }
-                                          inCart={true}
-                                        />
-                                      ))
-                                    : attrSet.items.map((attr) => (
-                                        <SwatchAttribute
-                                          key={attr.id}
-                                          attributeSet={attrSet}
-                                          attribute={attr}
-                                          selected={
-                                            item.selectedAttributes.find(
-                                              (a) =>
-                                                a.attributeSetId === attrSet.id
-                                            )?.selectedValue === attr.id
-                                          }
-                                          inCart={true}
-                                        />
-                                      ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="flex flex-col items-center justify-between w-fit">
-                            <button
-                              className="border cursor-pointer flex-center w-6 h-6"
-                              onClick={() => updateItemQuantity(item.id, -1)}
-                              data-testid="cart-item-amount-decrease"
+                            <div
+                              className="flex gap-2 p-1 flex-wrap"
+                              data-testid={`cart-item-attribute-${toKebabCase(
+                                attrSet.name
+                              )}`}
                             >
-                              <MinusIcon className="w-4 h-4" />
-                            </button>
-                            <span data-testid="cart-item-amount">
-                              {item.quantity}
-                            </span>
-                            <button
-                              className="border cursor-pointer flex-center w-6 h-6"
-                              onClick={() => updateItemQuantity(item.id, 1)}
-                              data-testid="cart-item-amount-increase"
-                            >
-                              <PlusIcon className="w-4 h-4" />
-                            </button>
+                              {attrSet.type === "TEXT"
+                                ? attrSet.items.map((attr) => (
+                                    <TextAttribute
+                                      key={attr.id}
+                                      attributeSet={attrSet}
+                                      attribute={attr}
+                                      selected={
+                                        item.selectedAttributes.find(
+                                          (a) => a.attributeSetId === attrSet.id
+                                        )?.selectedValue === attr.id
+                                      }
+                                      inCart={true}
+                                    />
+                                  ))
+                                : attrSet.items.map((attr) => (
+                                    <SwatchAttribute
+                                      key={attr.id}
+                                      attributeSet={attrSet}
+                                      attribute={attr}
+                                      selected={
+                                        item.selectedAttributes.find(
+                                          (a) => a.attributeSetId === attrSet.id
+                                        )?.selectedValue === attr.id
+                                      }
+                                      inCart={true}
+                                    />
+                                  ))}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-center max-w-32">
-                          <img
-                            src={getThumbnail(item.product.gallery).imageUrl}
-                            alt={item.product.name}
-                            className="h-full w-full object-contain rounded object-center"
-                          />
-                        </div>
+                        ))}
                       </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+
+                      <div className="flex flex-col items-center justify-between w-fit">
+                        <button
+                          className="border cursor-pointer flex-center w-6 h-6"
+                          onClick={() => updateItemQuantity(item.id, -1)}
+                          data-testid="cart-item-amount-decrease"
+                        >
+                          <MinusIcon className="w-4 h-4" />
+                        </button>
+                        <span data-testid="cart-item-amount">
+                          {item.quantity}
+                        </span>
+                        <button
+                          className="border cursor-pointer flex-center w-6 h-6"
+                          onClick={() => updateItemQuantity(item.id, 1)}
+                          data-testid="cart-item-amount-increase"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex-center max-w-32">
+                      <img
+                        src={getThumbnail(item.product.gallery).imageUrl}
+                        alt={item.product.name}
+                        className="h-full w-full object-contain rounded object-center"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             <div
               className="flex justify-between items-center font-primary font-bold text-lg"
               data-testid="cart-total"
@@ -214,7 +203,7 @@ export default function CartModal() {
           >
             PLACE ORDER
           </button>
-        </div>
+        </>
       )}
     </div>
   );

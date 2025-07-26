@@ -12,7 +12,7 @@ import Error from "../ui/Error";
 export default function ProductDetails() {
   const { product, error }: { product: Product; error: object } =
     useLoaderData();
-  const { addItem } = useCart();
+  const { addItem, toggleCart } = useCart();
   const [selectedAttributes, setSelectedAttributes] = useState<
     SelectedAttribute[]
   >([]);
@@ -48,6 +48,7 @@ export default function ProductDetails() {
       quantity: 1,
       selectedAttributes: selectedAttributes,
     });
+    toggleCart();
   };
   const sortedAttributes = [...(product.attributes ?? [])]?.sort((a, b) => {
     return a.name.localeCompare(b.name);
