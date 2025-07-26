@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import AppLayout from "@/components/ui/layout/AppLayout";
 import ProductsList from "@/components/pages/ProductsList";
+import ProductDetails from "@/components/pages/ProductDetails";
 
 import {
   categoriesLoader,
@@ -8,7 +9,6 @@ import {
   productLoader,
   productsByCategoryLoader,
 } from "@/services/data";
-import ProductDetails from "@/components/pages/ProductDetails";
 
 export const router = createBrowserRouter([
   {
@@ -23,12 +23,12 @@ export const router = createBrowserRouter([
         loader: ({ params }) => productsByCategoryLoader({ params }),
       },
       {
-        path: "/products/:categoryId",
+        path: "/category/:categoryId",
         Component: ProductsList,
         loader: ({ params }) => productsByCategoryLoader({ params }),
       },
       {
-        path: "/products/:productId",
+        path: "/product/:productId",
         Component: ProductDetails,
         loader: ({ params }) => productLoader({ params }),
       },

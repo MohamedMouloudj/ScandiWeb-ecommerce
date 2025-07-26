@@ -1,19 +1,15 @@
 import { create } from "zustand";
 import createSelectors from "@/utils/createSelectors";
 import { createJSONStorage, persist, devtools } from "zustand/middleware";
-
-type CartItem = {
-  id: string;
-  name: string;
-  quantity: number;
-};
+import { immer } from "zustand/middleware/immer";
+import type { OrderItem } from "@/types/Order";
 
 type CartState = {
-  items: CartItem[];
+  items: OrderItem[];
   isOpen: boolean;
-  addItem: (item: CartItem) => void;
-  updateItem: (id: string, item: Partial<CartItem>) => void;
-  removeItem: (id: string) => void;
+  addItem: (item: Partial<OrderItem>) => void;
+  updateItemQuantity: (id: number, quantity: number) => void;
+  removeItem: (id: number) => void;
   clearCart: () => void;
   toggleCart: () => void;
 };
@@ -21,35 +17,80 @@ type CartState = {
 const useCart = createSelectors(
   create<CartState>()(
     devtools(
-      persist(
-        (set) => ({
-          items: [],
-          isOpen: false,
-          addItem: (item) =>
-            set((state) => ({ items: [...state.items, item] })),
-          updateItem: (id, item) =>
-            set((state) => ({
-              items: state.items.map((cartItem) =>
-                cartItem.id === id ? { ...cartItem, ...item } : cartItem
-              ),
-            })),
-          removeItem: (id) =>
-            set((state) => ({
-              items: state.items.filter((item) => item.id !== id),
-            })),
-          clearCart: () => set({ items: [] }),
-          toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
-        }),
-        {
-          name: "cart",
-          storage: createJSONStorage(() => localStorage),
-          partialize: (state) => ({ items: state.items }),
-        }
-      ),
-      {
-        name: "cart-store",
-        enabled: process.env.NODE_ENV === "development",
-      }
+      immer(
+        persist(
+          (set) => ({
+            items: [],
+            isOpen: false,
+            addItem: (item: Partial<OrderItem>) =>
+              set((state: CartState) => {
+                if (item.selectedAttributes?.length === 0) {
+                  item.selectedAttributes =
+                    item.product?.attributes?.map((attrSet) => ({
+                      attributeSetId: attrSet.id,
+                      selectedValue: attrSet.items[0].id,
+                    })) ?? [];
+                }
+                const existingProduct = state.items.find(
+                  (cartItem: OrderItem) =>
+                    cartItem.product.id === item.product!.id &&
+                    cartItem.selectedAttributes.length ===
+                      (item.selectedAttributes?.length ?? 0) &&
+                    cartItem.selectedAttributes.every((attr) =>
+                      item.selectedAttributes?.some(
+                        (a) =>
+                          a.attributeSetId === attr.attributeSetId &&
+                          a.selectedValue === attr.selectedValue
+                      )
+                    ) &&
+                    (item.selectedAttributes ?? []).every((attr) =>
+                      cartItem.selectedAttributes.some(
+                        (a) =>
+                          a.attributeSetId === attr.attributeSetId &&
+                          a.selectedValue === attr.selectedValue
+                      )
+                    )
+                );
+                if (existingProduct) {
+                  existingProduct.quantity += 1;
+                } else {
+                  state.items.push({
+                    ...item,
+                    id: state.items.length + 1,
+                  } as unknown as OrderItem);
+                }
+              }),
+            updateItemQuantity: (id: number, quantity: number) =>
+              set((state: CartState) => {
+                const cartItem = state.items.find((ci) => ci.id === id);
+                if (cartItem) {
+                  if (cartItem.quantity + quantity > 0) {
+                    cartItem.quantity += quantity;
+                  } else {
+                    const index = state.items.findIndex((ci) => ci.id === id);
+                    if (index !== -1) {
+                      state.items.splice(index, 1);
+                    }
+                  }
+                }
+              }),
+            removeItem: (id: number) =>
+              set((state: CartState) => {
+                const index = state.items.findIndex((ci) => ci.id === id);
+                if (index !== -1) {
+                  state.items.splice(index, 1);
+                }
+              }),
+            clearCart: () => set({ items: [] }),
+            toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+          }),
+          {
+            name: "cart",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ items: state.items }),
+          }
+        )
+      )
     )
   )
 );

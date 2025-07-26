@@ -17,7 +17,6 @@ export const GET_PRODUCTS_BY_CATEGORY = gql`
       id
       name
       inStock
-      brand
       prices {
         amount
         currency {
@@ -29,6 +28,10 @@ export const GET_PRODUCTS_BY_CATEGORY = gql`
         id
         imageUrl
         sortOrder
+      }
+      category {
+        id
+        name
       }
       attributes {
         id

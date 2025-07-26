@@ -11,17 +11,11 @@ export const categoriesLoader = async () => {
     const { data, error } = await apolloClient.query({
       query: GET_CATEGORIES,
     });
-    if (error) {
-      throw new Error("Failed to fetch categories: " + error.message);
-    }
-    return { categories: data.categories, error, loading: false };
+
+    return { categories: data.categories, error };
   } catch (error) {
     console.error("Error fetching categories:", error);
-    return {
-      categories: [],
-      error: "Failed to fetch categories",
-      loading: false,
-    };
+    return { error: "Failed to fetch categories" };
   }
 };
 
@@ -39,10 +33,10 @@ export const productsByCategoryLoader = async ({
     if (error) {
       throw new Error("Failed to fetch products by category: " + error.message);
     }
-    return data.products;
+    return { products: data.products, error };
   } catch (error) {
     console.error("Error fetching products by category:", error);
-    throw new Error("Failed to fetch products by category");
+    return { error: "Failed to fetch products by category" };
   }
 };
 
@@ -54,32 +48,35 @@ export const productLoader = async ({
   try {
     const { productId } = params;
     if (!productId) {
-      throw new Error("Product ID is required");
+      return { error: "Product ID is required" };
     }
     const { data, error } = await apolloClient.query({
       query: GET_PRODUCT,
-      variables: { id: parseInt(productId) },
+      variables: { id: productId },
     });
     if (error) {
-      throw new Error("Failed to fetch product: " + error.message);
+      return { error: "Failed to fetch product: " + error.message };
     }
-    return data.product;
+    return { product: data.product, error };
   } catch (error) {
     console.error("Error fetching product:", error);
-    throw error;
+    return { error: "Failed to fetch product" };
   }
 };
 
 export const placeOrder = async ({ request }: { request: Request }) => {
   try {
     const formData = await request.formData();
-    const { data } = await apolloClient.mutate({
+    const orderData = JSON.parse(formData.get("orderData") as string);
+    const { data, errors } = await apolloClient.mutate({
       mutation: PLACE_ORDER,
-      variables: formData,
+      variables: {
+        input: orderData,
+      },
     });
-    return data.placeOrder;
+    return { data: data.placeOrder, error: errors };
   } catch (error) {
     console.error("Error placing order:", error);
-    throw new Error("Failed to place order");
+    return { error: "Failed to place order" };
   }
 };

@@ -1,16 +1,20 @@
-import { Suspense } from "react";
 import { Outlet } from "react-router";
 import Navbar from "@/components/ui/layout/Navbar";
-import Spinner from "@/components/ui/Spinner";
+import useCart from "@/store/useCartStore";
 
 export default function AppLayout() {
+  const { isOpen, toggleCart } = useCart();
   return (
     <>
       <Navbar />
+      {isOpen && (
+        <div
+          className="fixed inset-0 top-16 bg-cart-modal-background z-30 pointer-events-auto"
+          onClick={toggleCart}
+        />
+      )}
       <main className="app-container">
-        <Suspense fallback={<Spinner />}>
-          <Outlet />
-        </Suspense>
+        <Outlet />
       </main>
     </>
   );
