@@ -1,8 +1,9 @@
 <?php
-require_once 'vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+require_once __DIR__ . '/../bootstrap.php';
+
+require_once __DIR__ . '/migrations/001_create_initial_schema.php';
+require_once __DIR__ . '/seeds/InitialDataSeeder.php';
 
 try {
     $pdo = new PDO(
