@@ -1,4 +1,8 @@
+.vscode
+.idea
+
 vendor/
 .env
-*.sql
+.env.local
+sqlite.sql
 *.sqlite

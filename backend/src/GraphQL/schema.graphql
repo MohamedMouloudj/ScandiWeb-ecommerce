@@ -1,0 +1,97 @@
+type Query {
+  categories: [Category!]!
+  products(categoryId: Int): [Product!]!
+  product(id: String!): Product
+}
+
+type Mutation {
+  placeOrder(input: PlaceOrderInput!): Order!
+}
+
+type Category {
+  id: Int!
+  name: String!
+  products: [Product!]!
+}
+
+type Product {
+  id: String!
+  name: String!
+  inStock: Boolean!
+  description: String
+  category: Category!
+  brand: String
+  prices: [Price!]!
+  gallery: [ProductImage!]!
+  attributes: [AttributeSet!]!
+}
+
+type Price {
+  amount: Float!
+  currency: Currency!
+}
+
+type Currency {
+  label: String!
+  symbol: String!
+}
+
+type ProductImage {
+  id: Int!
+  imageUrl: String!
+  sortOrder: Int!
+}
+
+type AttributeSet {
+  id: String!
+  name: String!
+  type: AttributeType!
+  items: [Attribute!]!
+}
+
+type Attribute {
+  id: String!
+  displayValue: String!
+  value: String!
+}
+
+enum AttributeType {
+  TEXT
+  SWATCH
+}
+
+type Order {
+  id: Int!
+  totalAmount: Float!
+  currency: String!
+  items: [OrderItem!]!
+}
+
+type OrderItem {
+  id: Int!
+  product: Product!
+  quantity: Int!
+  selectedAttributes: [AttributeSelection!]!
+}
+
+type AttributeSelection {
+  attributeSetId: String!
+  selectedValue: String!
+}
+
+input PlaceOrderInput {
+  items: [OrderItemInput!]!
+  totalAmount: Float!
+  currency: String!
+}
+
+input OrderItemInput {
+  productId: String!
+  quantity: Int!
+  selectedAttributes: [AttributeSelectionInput!]!
+}
+
+input AttributeSelectionInput {
+  attributeSetId: String!
+  selectedValue: String!
+}
