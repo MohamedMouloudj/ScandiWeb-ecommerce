@@ -7,7 +7,7 @@ import Error from "../ui/Error";
 export default function ProductsList() {
   const { products, error } = useLoaderData();
   const location = useLocation();
-  const categoryName = location.state?.categoryName;
+  const categoryName = location.state?.categoryName || "all";
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 

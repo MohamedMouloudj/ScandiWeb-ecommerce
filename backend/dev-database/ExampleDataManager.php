@@ -22,18 +22,19 @@ class DirectSQLExecutor
     {
         try {
             if ($this->dbType === 'mysql') {
-                $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset=utf8mb4";
+                $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']};charset=utf8mb4";
                 $this->pdo = new PDO($dsn, $config['username'], $config['password'], [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]);
-            } elseif ($this->dbType === 'sqlite') {
-                $dsn = "sqlite:{$config['database']}";
-                $this->pdo = new PDO($dsn, null, null, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
             }
+            // elseif ($this->dbType === 'sqlite') {
+            //     $dsn = "sqlite:{$config['database']}";
+            //     $this->pdo = new PDO($dsn, null, null, [
+            //         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            //         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            //     ]);
+            // }
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
@@ -122,9 +123,9 @@ class CommandLineExecutor
     /**
      * Execute MySQL SQL file using command line
      */
-    public static function executeMySQLFile($host, $username, $password, $database, $sqlFile)
+    public static function executeMySQLFile($host, $port, $username, $password, $database, $sqlFile)
     {
-        $command = "mysql -h $host -u $username -p$password $database < $sqlFile";
+        $command = "mysql -h $host -P $port -u $username -p$password $database < $sqlFile";
 
         echo "Executing: $command\n";
 
@@ -146,33 +147,33 @@ class CommandLineExecutor
     /**
      * Execute SQLite SQL file using command line
      */
-    public static function executeSQLiteFile($databasePath, $sqlFile)
-    {
-        $command = "sqlite3 $databasePath < $sqlFile";
+    // public static function executeSQLiteFile($databasePath, $sqlFile)
+    // {
+    //     $command = "sqlite3 $databasePath < $sqlFile";
 
-        echo "Executing: $command\n";
+    //     echo "Executing: $command\n";
 
-        $output = [];
-        $returnCode = 0;
+    //     $output = [];
+    //     $returnCode = 0;
 
-        exec($command, $output, $returnCode);
+    //     exec($command, $output, $returnCode);
 
-        if ($returnCode === 0) {
-            echo "SQLite SQL file executed successfully!\n";
-        } else {
-            echo "Error executing SQLite SQL file. Return code: $returnCode\n";
-            echo implode("\n", $output);
-        }
+    //     if ($returnCode === 0) {
+    //         echo "SQLite SQL file executed successfully!\n";
+    //     } else {
+    //         echo "Error executing SQLite SQL file. Return code: $returnCode\n";
+    //         echo implode("\n", $output);
+    //     }
 
-        return $returnCode === 0;
-    }
+    //     return $returnCode === 0;
+    // }
 
     /**
      * Execute SQL file with mysqldump-style import
      */
-    public static function executeMySQLImport($host, $username, $password, $database, $sqlFile)
+    public static function executeMySQLImport($host, $port, $username, $password, $database, $sqlFile)
     {
-        $command = "mysql -h $host -u $username -p$password $database --execute=\"SOURCE $sqlFile\"";
+        $command = "mysql -h $host -P $port -u $username -p$password $database --execute=\"SOURCE $sqlFile\"";
 
         echo "Executing: $command\n";
 
@@ -193,7 +194,7 @@ class DropAllTables
     public static function dropAllTables($config, $driver)
     {
         if ($driver === 'mysql') {
-            $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset=utf8mb4";
+            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']};charset=utf8mb4";
             $pdo = new PDO($dsn, $config['username'], $config['password']);
 
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
@@ -206,25 +207,27 @@ class DropAllTables
 
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
             echo "All MySQL tables dropped successfully!\n";
-        } elseif ($driver === 'sqlite') {
-            $dsn = "sqlite:{$config['sqliteDatabase']}";
-            $pdo = new PDO($dsn, null, null);
+        }
+        // elseif ($driver === 'sqlite') {
+        //     $dsn = "sqlite:{$config['sqliteDatabase']}";
+        //     $pdo = new PDO($dsn, null, null);
 
-            $pdo->exec("PRAGMA foreign_keys = OFF");
+        //     $pdo->exec("PRAGMA foreign_keys = OFF");
 
-            $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
-                ->fetchAll(PDO::FETCH_COLUMN);
-            foreach ($tables as $table) {
-                $pdo->exec("DROP TABLE IF EXISTS \"$table\"");
-                echo "Dropped table: $table\n";
-            }
+        //     $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        //         ->fetchAll(PDO::FETCH_COLUMN);
+        //     foreach ($tables as $table) {
+        //         $pdo->exec("DROP TABLE IF EXISTS \"$table\"");
+        //         echo "Dropped table: $table\n";
+        //     }
 
-            $pdo->exec("PRAGMA foreign_keys = ON");
-            echo "All SQLite tables dropped successfully!\n";
-        } elseif ($driver === 'all') {
-            self::dropAllTables($config, 'mysql');
-            self::dropAllTables($config, 'sqlite');
-        } else {
+        //     $pdo->exec("PRAGMA foreign_keys = ON");
+        //     echo "All SQLite tables dropped successfully!\n";
+        // } elseif ($driver === 'all') {
+        //     self::dropAllTables($config, 'mysql');
+        //     self::dropAllTables($config, 'sqlite');
+        // } 
+        else {
             echo "Unsupported driver: $driver\n";
         }
     }

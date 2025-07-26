@@ -1,6 +1,15 @@
 # SW - E-commerce Project
 
-A full-stack e-commerce application with GraphQL API backend and React frontend.
+A full-stack e-commerce application with GraphQL API backend and React frontend, built according to the [Scandiweb Junior Full-Stack Developer test task requirements](https://scandiweb.notion.site/Junior-Full-Stack-Developer-test-task-3833494124714845b71bf46096b6eeb9#a786a76ed71b453cb698c4a4a7cb1fc3).
+
+## Project Overview
+
+This project demonstrates a modern e-commerce solution with:
+
+- **Backend**: PHP-based GraphQL API with Doctrine ORM
+- **Frontend**: React TypeScript application with modern tooling
+- **Database**: MySQL
+- **Architecture**: Clean separation of concerns with proper data loading and caching
 
 ## Project Structure
 
@@ -12,128 +21,378 @@ SW/
 │   │   ├── Database/       # Database management & data loaders
 │   │   ├── Entity/         # Database entities/models
 │   │   └── GraphQL/        # GraphQL schema & resolvers
-│   ├── data/               # Database population scripts
+│   ├── database/           # Production database migrations
+│   ├── dev-database/       # Development database schemas
 │   └── public/             # Web server entry point
 └── frontend/               # React TypeScript application
-    └── scandi-web-ecommerce/
-        └── src/            # React components & logic
+    └── src/                # React components & logic
 ```
 
-## Backend Structure
+## Backend Architecture
+
+### Technology Stack
+
+- **PHP 8.1+**: Core backend language
+- **Doctrine ORM**: Object-relational mapping for database operations
+- **Webonyx GraphQL PHP**: GraphQL library for PHP (not a framework, just a GraphQL implementation)
+- **Overblog DataLoader PHP**: Efficient data loading with caching to prevent N+1 queries
+- **Symfony Cache Component**: Used internally by libraries for caching (not a framework, just a caching component)
+- **React Promise**: Asynchronous promise handling for PHP
+- **Nikic Fast Route**: High-performance routing library (not a framework, just a routing library)
+- **Composer**: Dependency management
+
+### Database Schema
+
+The application uses a comprehensive e-commerce database schema with the following entities:
+
+```mermaid
+erDiagram
+    PRODUCT {
+        string id PK
+        string name
+        boolean in_stock
+        text description
+        string brand
+        string product_type
+        datetime created_at
+    }
+    CATEGORY {
+        int id PK
+        string name UK
+        string type
+        datetime created_at
+    }
+    PRODUCT_PRICE {
+        int id PK
+        string product_id FK
+        decimal amount
+        int currency_id FK
+    }
+    CURRENCY {
+        int id PK
+        string label
+        string symbol
+        datetime created_at
+    }
+    PRODUCT_GALLERY {
+        int id PK
+        string product_id FK
+        text image_url
+        int sort_order
+    }
+    ATTRIBUTE_SET {
+        string id PK
+        string name
+        string type
+        string attribute_type
+    }
+    ATTRIBUTE {
+        string id PK
+        string attribute_set_id FK
+        string display_value
+        string value
+        string attr_type
+    }
+    PRODUCT_ATTRIBUTE {
+        int id PK
+        string product_id FK
+        string attribute_set_id FK
+    }
+    ORDER {
+        int id PK
+        decimal total_amount
+        int currency_id FK
+        datetime created_at
+    }
+    ORDER_ITEM {
+        int id PK
+        int order_id FK
+        string product_id FK
+        int quantity
+        json selected_attributes
+    }
+
+    PRODUCT ||--o{ PRODUCT_PRICE : has
+    PRODUCT ||--o{ PRODUCT_GALLERY : has
+    PRODUCT ||--o{ PRODUCT_ATTRIBUTE : has
+    PRODUCT }o--|| CATEGORY : belongs_to
+    PRODUCT_ATTRIBUTE }o--|| ATTRIBUTE_SET : references
+    ATTRIBUTE_SET ||--o{ ATTRIBUTE : contains
+    ORDER ||--o{ ORDER_ITEM : contains
+    ORDER }o--|| CURRENCY : uses
+    PRODUCT_PRICE }o--|| CURRENCY : uses
+    ORDER_ITEM }o--|| PRODUCT : references
+```
+
+### Key Features
+
+1. **Inheritance Support**: Products and Categories use single-table inheritance for different types
+2. **Flexible Attributes**: Dynamic attribute system with text and swatch types
+3. **Multi-currency Support**: Products can have prices in different currencies
+4. **Image Gallery**: Products support multiple images with sort order
+5. **Order Management**: Complete order processing with selected attributes
+
+### GraphQL Schema
+
+The GraphQL API provides a flexible interface for data querying:
+
+```graphql
+type Query {
+  categories: [Category!]!
+  products(categoryId: Int): [Product!]!
+  product(id: String!): Product
+}
+
+type Mutation {
+  placeOrder(input: PlaceOrderInput!): Order!
+}
+
+type Product {
+  id: String!
+  name: String!
+  inStock: Boolean!
+  description: String
+  category: Category!
+  brand: String
+  prices: [Price!]!
+  gallery: [ProductImage!]!
+  attributes: [AttributeSet!]!
+}
+...
+```
+
+### Resolver Architecture
+
+The backend uses a sophisticated resolver system:
+
+- **ResolverManager**: Central coordinator for all GraphQL resolvers
+- **Specialized Resolvers**: Separate resolver classes for each entity type
+- **Data Loaders**: Efficient data loading with caching to prevent N+1 queries using Overblog DataLoader
+- **Caching**: Multi-level caching with DataLoader caching and Symfony Cache component
+- **Async Operations**: React Promise for handling asynchronous database operations
+
+#### Resolver Structure
 
 ```
-backend/
-├── src/
-│   ├── Controller/
-│   │   └── GraphQLController.php
-│   ├── Database/
-│   │   ├── DatabaseManager.php
-│   │   └── DataLoader/
-│   │       ├── AttributeDataLoader.php
-│   │       ├── BaseDataLoader.php
-│   │       ├── CategoryDataLoader.php
-│   │       ├── EcommerceDataLoaderManager.php
-│   │       ├── OrderDataLoader.php
-│   │       └── ProductDataLoader.php
-│   ├── Entity/
-│   │   ├── Attributes.php
-│   │   ├── Categories.php
-│   │   ├── Currency.php
-│   │   ├── Orders.php
-│   │   └── Products.php
-│   └── GraphQL/
-│       ├── Resolvers/
-│       │   ├── AttributeSetResolvers.php
-│       │   ├── BaseResolver.php
-│       │   ├── CategoryResolvers.php
-│       │   ├── MutationResolvers.php
-│       │   ├── OrderItemResolvers.php
-│       │   ├── OrderResolvers.php
-│       │   ├── ProductResolvers.php
-│       │   ├── QueryResolvers.php
-│       │   └── ResolverManager.php
-│       └── schema.graphql
-├── data/
-│   ├── ExampleDataManager.php      # Database population script
-│   ├── drop/
-│   │   └── dropTables.php          # Drop all tables from the database
-│   └── init/
-│       └── pdoOption.php           # Populate the database with initial data using PDO classes
-│       └── cmdOption.php           # Populate the database with initial data using Command Line
-│       └── oneLinerOption.php      # Populate the database with initial data using one-liner functions
-│   ├── mysql.sql                   # MySQL database schema
-│   └── sqlite.sql                  # SQLite database schema
-└── public/
-    └── index.php           # Entry point
+GraphQL/Resolvers/
+├── ResolverManager.php      # Main resolver coordinator
+├── QueryResolvers.php       # Root query resolvers
+├── MutationResolvers.php    # Mutation resolvers
+├── ProductResolvers.php     # Product-specific resolvers
+├── CategoryResolvers.php    # Category-specific resolvers
+├── AttributeSetResolvers.php # Attribute resolvers
+├── OrderResolvers.php       # Order resolvers
+└── OrderItemResolvers.php   # Order item resolvers
 ```
 
-## Database Setup
+### Database Management
 
-### Database Options
+#### Development vs Production
 
-- **SQLite**: Used for quicker development and testing
-- **MySQL**: The main production database
+- **`dev-database/`**: Development database schema and sample data
+  - `mysql.sql`: MySQL development schema with sample data
+  - `init/`: PHP initialization scripts for easy database setup
+    - `cmdOption.php`: Interactive command-line initialization
+    - `pdoOption.php`: PDO-based initialization
+    - `oneLinerOption.php`: Simple one-liner initialization
+- **`database/`**: Production database migrations
+  - `migrations/`: Database migration files for deployment
+  - `seeds/`: Production data seeding
 
-### Initial Data Population
+#### Data Loading Strategy
 
-The `backend/data/ExampleDataManager.php` file contains scripts to populate your database with initial data. This is useful for:
+- **EcommerceDataLoaderManager**: Centralized data loading with caching
+- **Specialized Loaders**: Separate loaders for each entity type (Product, Category, Attribute, Order)
+- **Overblog DataLoader**: Efficient batching and caching to prevent N+1 queries
+- **React Promise**: Asynchronous promise resolution for better performance
+- **Multi-level Caching**: DataLoader caching + Symfony Cache component for optimal performance
 
-- Setting up sample products, categories, and attributes
-- Creating test users and orders
-- Initializing the database schema
+## Frontend Architecture
 
-It also provides a way to drop all tables from the database.
+### Technology Stack
 
-#### Population Options
+- **React 19**: Modern React with latest features
+- **TypeScript**: Type safety and better developer experience
+- **Vite**: Fast build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework for styling
+- **React Router v6**: Client-side routing with data loading (not a framework, just a routing library)
+- **Apollo Client**: GraphQL client for API communication (small library, not a framework)
+- **Zustand**: Simple global state management (not a UI library or framework, just a state management tool)
+- **Lucide React**: Icon library
 
-I have created 3 options to populate the database.
-It does not matter which one you use, they all do the same thing and make you follow the same steps.
+### Key Features
 
-**Option 1: Using PDO Classes**
+1. **Type Safety**: Full TypeScript implementation
+2. **Modern Routing**: React Router v6 with data loading capabilities
+3. **State Management**: Zustand for simple, efficient state management
+4. **GraphQL Integration**: Apollo Client for seamless API communication
+5. **Responsive Design**: Tailwind CSS for modern, responsive UI
+6. **Component Architecture**: Modular, reusable components
 
-```php
-php data/init/pdoOption.php
+### Frontend Structure
+
+```
+frontend/src/
+├── components/
+│   ├── pages/              # Page components
+│   │   ├── ProductsList.tsx    # Main products listing page
+│   │   └── ProductDetails.tsx  # Individual product detail page
+│   └── ui/                 # Reusable UI components
+│       ├── layout/         # Layout components (AppLayout, Navbar)
+│       ├── ProductCard.tsx # Product display card
+│       ├── CartModal.tsx   # Shopping cart modal
+│       ├── CartBtn.tsx     # Cart button component
+│       ├── GalleryCarousel.tsx # Product image carousel
+│       ├── GalleryThumbnails.tsx # Product image thumbnails
+│       ├── TextAttribute.tsx # Text-based product attributes
+│       ├── SwatchAttribute.tsx # Color swatch attributes
+│       ├── Logo.tsx        # Application logo
+│       ├── Spinner.tsx     # Loading spinner
+│       └── Error.tsx       # Error display component
+├── services/               # API and data services
+│   ├── apolloClient.ts     # GraphQL client configuration
+│   ├── data.ts            # Data loading functions with React Router
+│   └── gqlSchema.ts       # GraphQL schema type definitions
+├── store/                  # State management
+│   └── useCartStore.ts     # Global cart state with Zustand
+├── types/                  # TypeScript type definitions
+│   ├── Product.ts         # Product interface
+│   ├── Category.ts        # Category interface
+│   ├── Order.ts           # Order interface
+│   └── Attribute.ts       # Attribute interface
+├── utils/                  # Utility functions
+└── router/                 # Routing configuration
+    └── routes.ts           # Route definitions with data loading
 ```
 
-**Option 2: Using Command Line**
+### State Management
 
-```php
-php data/init/cmdOption.php
-```
+- **Zustand**: Simple, lightweight state management
+- **Cart Store**: Global cart state with persistence
+- **No Complex State**: Avoids over-engineering with simple, effective solutions
 
-**Option 3: Simple One-Liner Functions**
+## Getting Started
 
-```php
-php data/init/oneLinerOption.php
-```
+### Prerequisites
 
-## Dropping Tables
+- PHP 8.1+
+- Node.js 18+
+- Composer
+- MySQL (running on your machine)
+- Environment configuration (.env file)
 
-If you want to drop all tables from the database in easy way, you can use the following script.
+### Backend Setup
 
-```php
-php data/drop/dropTables.php
-```
-
-## Quick Start
-
-1. **Backend Setup**
+1. **Install Dependencies**
 
    ```bash
    cd backend
    composer install
    ```
 
-2. **Frontend Setup**
+2. **Database Setup**
+
+   **Option 1: Direct MySQL Import**
+
    ```bash
-   cd frontend/scandi-web-ecommerce
+   # For development
+   mysql -u root -p < dev-database/mysql.sql
+   ```
+
+   **Option 2: PHP Initialization Scripts**
+
+   First, set up your environment:
+
+   ```bash
+   # Copy and configure environment file
+   cp .env.example .env
+   # Edit .env with your MySQL credentials
+   ```
+
+   Then run one of the initialization scripts:
+
+   ```bash
+   # Command line option (interactive)
+   php dev-database/init/cmdOption.php
+
+   # PDO option
+   php dev-database/init/pdoOption.php
+
+   # One-liner option
+   php dev-database/init/oneLinerOption.php
+   ```
+
+   **For production**
+
+   ```bash
+   php database/migrate.php
+   ```
+
+3. **Start Development Server**
+
+   ```bash
+   php -S localhost:8000 -t public
+   ```
+
+### Frontend Setup
+
+1. **Install Dependencies**
+
+   ```bash
+   cd frontend
    npm install
+   ```
+
+2. **Start Development Server**
+
+   ```bash
    npm run dev
+   ```
+
+3. **Build for Production**
+
+   ```bash
+   npm run build
    ```
 
 ## Development Notes
 
-- Use SQLite for local development to speed up setup
-- MySQL is the primary database for production
-- GraphQL API provides flexible data querying
-- React frontend with TypeScript for type safety
+### Technology Choices Explained
+
+**Backend:**
+
+- **Webonyx GraphQL PHP**: GraphQL library for PHP, not a framework - just a GraphQL implementation
+- **Overblog DataLoader PHP**: Efficient data loading with batching and caching to prevent N+1 queries
+- **Symfony Cache Component**: Used internally by libraries for caching, not a framework - just a caching component
+- **React Promise**: Asynchronous promise handling for PHP operations
+- **Nikic Fast Route**: High-performance routing library, not a framework - just a routing library
+- **Doctrine ORM**: Provides robust database abstraction and query optimization
+
+**Frontend:**
+
+- **React Router v6**: Handles routing with data loading capabilities, not a framework
+- **Apollo Client**: Small library for GraphQL client-side operations, not a framework
+- **Zustand**: Simple tool for global UI state management, not a UI library or framework
+- **Tailwind CSS**: Utility-first CSS for rapid UI development
+
+### Performance Optimizations
+
+1. **Multi-level Caching**: Overblog DataLoader caching + Symfony Cache component for database requests
+2. **Efficient Data Loading**: DataLoader batching prevents N+1 queries and optimizes database calls
+3. **Asynchronous Operations**: React Promise for non-blocking PHP operations
+4. **High-performance Routing**: Nikic Fast Route for efficient request handling
+5. **GraphQL Optimization**: Webonyx GraphQL PHP reduces over-fetching and under-fetching
+6. **Code Splitting**: Vite provides automatic code splitting
+7. **Type Safety**: TypeScript prevents runtime errors
+
+### Compliance with Requirements
+
+This project strictly adheres to the [Scandiweb test task requirements](https://scandiweb.notion.site/Junior-Full-Stack-Developer-test-task-3833494124714845b71bf46096b6eeb9#a786a76ed71b453cb698c4a4a7cb1fc3):
+
+- ✅ No frameworks used (only libraries and components)
+- ✅ Modern React with TypeScript
+- ✅ GraphQL API
+- ✅ Clean, maintainable code structure
+- ✅ Proper state management
+- ✅ Responsive design
+- ✅ Type safety throughout the stack
