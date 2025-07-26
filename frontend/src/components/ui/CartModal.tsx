@@ -19,6 +19,8 @@ export default function CartModal() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const fetcher = useFetcher();
 
+  console.log("CartModal render - isOpen:", isOpen);
+
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
       if (fetcher.data?.error) {
@@ -63,7 +65,7 @@ export default function CartModal() {
   return (
     <div
       className={`fixed top-16 right-0 md:right-8 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80 transition-all duration-300 ${
-        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        isOpen ? "block" : "hidden"
       }`}
       data-testid="cart-overlay"
     >
