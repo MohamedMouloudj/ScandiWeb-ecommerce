@@ -36,8 +36,6 @@ export default function CartModal() {
     }
   }, [fetcher.state, fetcher.data, clearCart]);
 
-  if (!isOpen) return null;
-
   const totalPrice = getPriceWithSymbol(
     items.map((item) => ({
       prices: item.product.prices,
@@ -64,7 +62,9 @@ export default function CartModal() {
 
   return (
     <div
-      className="fixed top-16 right-0 md:right-8 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80"
+      className={`fixed top-16 right-0 md:right-8 z-50 bg-background shadow-2xl px-4 py-8 flex flex-col gap-8 min-w-80 transition-all duration-300 ${
+        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+      }`}
       data-testid="cart-overlay"
     >
       {fetcher.state === "submitting" ? (
