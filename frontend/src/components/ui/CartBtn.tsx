@@ -5,9 +5,7 @@ export default function CartBtn() {
   const showBubble = items.length > 0;
 
   const handleClick = () => {
-    // console.log("Cart button clicked, current isOpen:", isOpen);
     toggleCart();
-    // console.log("After toggleCart, isOpen should be:", !isOpen);
   };
 
   return (

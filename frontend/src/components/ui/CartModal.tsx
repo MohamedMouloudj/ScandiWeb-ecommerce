@@ -19,8 +19,6 @@ export default function CartModal() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const fetcher = useFetcher();
 
-  console.log("CartModal render - isOpen:", isOpen);
-
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
       if (fetcher.data?.error) {
