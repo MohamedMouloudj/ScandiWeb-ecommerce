@@ -3,14 +3,18 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'products')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'product_type', type: 'string')]
-#[ORM\DiscriminatorMap(['clothing' => ClothingProduct::class, 'tech' => TechProduct::class, 'general' => GeneralProduct::class])]
+#[ORM\DiscriminatorMap([
+    'clothing' => ClothingProduct::class,
+    'tech' => TechProduct::class,
+    'general' => GeneralProduct::class
+])]
 abstract class Product
 {
     #[ORM\Id]
@@ -108,63 +112,45 @@ abstract class Product
     {
         return $this->productAttributes;
     }
-}
-
-#[ORM\Entity]
-class GeneralProduct extends Product
-{
-    public function canAddToCart(): bool
+    public function getCreatedAt(): \DateTime
     {
-        return $this->inStock;
+        return $this->createdAt;
     }
 
-    public function getProductSpecificData(): array
+    // Setters
+    public function setId(string $id): self
     {
-        return [
-            'type' => 'general'
-        ];
+        $this->id = $id;
+        return $this;
     }
-}
-
-#[ORM\Entity]
-class ClothingProduct extends Product
-{
-
-    public function canAddToCart(): bool
+    public function setName(string $name): self
     {
-        return $this->inStock && $this->hasRequiredAttributes();
+        $this->name = $name;
+        return $this;
     }
-
-    public function getProductSpecificData(): array
+    public function setInStock(bool $inStock): self
     {
-        return [
-            'type' => 'clothing',
-            'requiresSize' => true,
-            'requiresColor' => true
-        ];
+        $this->inStock = $inStock;
+        return $this;
     }
-
-    private function hasRequiredAttributes(): bool
+    public function setDescription(?string $description): self
     {
-        // Check if product has size and color attributes, not in the assignment
-        return true;
+        $this->description = $description;
+        return $this;
     }
-}
-
-#[ORM\Entity]
-class TechProduct extends Product
-{
-    public function canAddToCart(): bool
+    public function setCategory(Category $category): self
     {
-        return $this->inStock;
+        $this->category = $category;
+        return $this;
     }
-
-    public function getProductSpecificData(): array
+    public function setBrand(?string $brand): self
     {
-        return [
-            'type' => 'tech',
-            'hasWarranty' => true,
-            'requiresAttributes' => false
-        ];
+        $this->brand = $brand;
+        return $this;
+    }
+    public function setCreatedAt(\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
     }
 }

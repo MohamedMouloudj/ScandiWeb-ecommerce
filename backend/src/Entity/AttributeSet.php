@@ -52,34 +52,3 @@ abstract class AttributeSet
         return $this->attributes;
     }
 }
-
-#[ORM\Entity]
-class TextAttributeSet extends AttributeSet
-{
-
-    public function validateValue(string $value): bool
-    {
-        return !empty(trim($value));
-    }
-
-    public function getDisplayType(): string
-    {
-        return 'TEXT';
-    }
-}
-
-#[ORM\Entity]
-class SwatchAttributeSet extends AttributeSet
-{
-
-
-    public function validateValue(string $value): bool
-    {
-        return $this->attributes->exists(fn($key, $attr) => $attr->getValue() === $value);
-    }
-
-    public function getDisplayType(): string
-    {
-        return 'SWATCH';
-    }
-}

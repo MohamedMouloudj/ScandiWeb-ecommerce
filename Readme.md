@@ -390,8 +390,10 @@ frontend/src/
 This project strictly adheres to the [Scandiweb test task requirements](https://scandiweb.notion.site/Junior-Full-Stack-Developer-test-task-3833494124714845b71bf46096b6eeb9#a786a76ed71b453cb698c4a4a7cb1fc3):
 
 - ✅ No frameworks used (only libraries and components)
-- ✅ Modern React with TypeScript
+- ✅ Followed requested PSRs (PSR-1, PSR-12) for coding standards
+- ✅ Strictly followed OOP principles in backend development
 - ✅ GraphQL API
+- ✅ Modern React with TypeScript
 - ✅ Clean, maintainable code structure
 - ✅ Proper state management
 - ✅ Responsive design

@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../bootstrap.php';
 include_once __DIR__ . '/../ExampleDataManager.php';
 
 function runMySQLFile($host, $port, $user, $pass, $db, $file)
