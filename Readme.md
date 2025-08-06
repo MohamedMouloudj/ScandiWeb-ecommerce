@@ -241,6 +241,22 @@ GraphQL/Resolvers/
 - **React Promise**: Asynchronous promise resolution for better performance
 - **Multi-level Caching**: DataLoader caching + Symfony Cache component for optimal performance
 
+## Doctrine Proxy Classes
+
+Doctrine uses proxy classes to enable lazy loading of entities. In development, proxies are generated in memory on-the-fly, so no manual action is needed. In production, for optimal performance and stability, proxies should be pre-generated and stored in the `backend/var/cache/doctrine/proxies/` directory.
+
+**What to do in production:**
+
+After deploying new or changed entities to your production server, run the following command to generate all required proxy classes:
+
+```bash
+php backend/generate-proxies.php
+```
+
+This ensures Doctrine can efficiently lazy-load entities without runtime errors or performance issues. The `backend/var/cache/doctrine/proxies/.gitkeep` file is present to ensure the directory exists in your repository, but it should remain empty.
+
+For more details, see the [Doctrine ORM documentation on proxy classes](https://www.doctrine-project.org/projects/doctrine-orm/en/3.5/reference/advanced-configuration.html#generating-proxy-classes).
+
 ## Frontend Architecture
 
 ### Technology Stack

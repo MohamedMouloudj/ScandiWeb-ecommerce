@@ -13,10 +13,30 @@ class DatabaseManager
     public static function getEntityManager(): EntityManager
     {
         if (self::$entityManager === null) {
+            $isDevMode = ($_ENV['APP_ENV'] ?? 'development') !== 'production';
+
+            // Proxy classes directory 
+            $proxyDir = dirname(__DIR__, 2) . '/var/cache/doctrine/proxies';
+
+            if (!is_dir($proxyDir)) {
+                mkdir($proxyDir, 0755, true);
+            }
+
             $config = ORMSetup::createAttributeMetadataConfiguration(
                 paths: [__DIR__ . '/../Entity'],
-                isDevMode: true,
+                isDevMode: $isDevMode,
+                proxyDir: $proxyDir,
+                cache: $isDevMode ? null : new \Symfony\Component\Cache\Adapter\ArrayAdapter()
             );
+
+            // Proxy generation strategy based on environment
+            if ($isDevMode) {
+                // Development: Generate proxies on-demand (this uses eval(), so there is no saved proxy classes)
+                $config->setAutoGenerateProxyClasses(\Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_EVAL);
+            } else {
+                // Production: Generate only if file doesn't exist
+                $config->setAutoGenerateProxyClasses(\Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+            }
 
             $connectionParams = [
                 'driver'   => 'pdo_mysql',

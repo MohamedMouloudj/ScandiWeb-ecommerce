@@ -7,3 +7,7 @@ vendor/
 .env.production
 sqlite.sql
 *.sqlite
+
+# Cache directories
+var/cache/doctrine/proxies/*
+!var/cache/doctrine/proxies/.gitkeep
