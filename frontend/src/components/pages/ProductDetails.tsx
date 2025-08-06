@@ -1,13 +1,14 @@
-import type { Product } from "@/types/Product";
 import { useLoaderData } from "react-router";
-import { getPriceWithSymbol, stripHtml, toKebabCase } from "@/utils/helpers";
+import { useState } from "react";
+import parse from "html-react-parser";
+import type { Product } from "@/types/Product";
+import type { SelectedAttribute } from "@/types/Order";
+import { getPriceWithSymbol, toKebabCase } from "@/utils/helpers";
 import GalleryCarousel from "@/components/ui/GalleryCarousel";
 import SwatchAttribute from "@/components/ui/SwatchAttribute";
 import TextAttribute from "@/components/ui/TextAttribute";
-import type { SelectedAttribute } from "@/types/Order";
-import { useState } from "react";
 import useCart from "@/store/useCartStore";
-import Error from "../ui/Error";
+import Error from "@/components/ui/Error";
 
 export default function ProductDetails() {
   const { product, error }: { product: Product; error: object } =
@@ -137,12 +138,12 @@ export default function ProductDetails() {
           >
             ADD TO CART
           </button>
-          <p
-            className="text-neutral-black font-secondary text-md font-normal mt-2"
+          <div
+            className="text-neutral-black font-secondary font-normal mt-2"
             data-testid="product-description"
           >
-            {stripHtml(product.description)}
-          </p>
+            {parse(product.description || "")}
+          </div>
         </div>
       </div>
     </div>
