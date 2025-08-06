@@ -18,10 +18,15 @@ try {
     // Generate proxies for all entities
     foreach ($allMetadata as $metadata) {
         $className = $metadata->getName();
-        echo "Generating proxy for: $className\n";
-
+        // Skip abstract classes, interfaces, and mapped superclasses, it can't be used to generate a proxy
+        $refl = new ReflectionClass($className);
+        if ($refl->isAbstract() || $refl->isInterface() || $metadata->isMappedSuperclass) {
+            echo "Skipping non-concrete class: $className\n";
+            continue;
+        }
         // Trigger proxy generation
-        $em->getProxyFactory()->getProxy($className, ['id' => 1]);
+        echo "Generating proxy for: $className\n";
+        $em->getProxyFactory()->getProxy($className, [$metadata->getIdentifier()[0] => 1]);
     }
 
     echo "Proxy generation completed successfully!\n";
