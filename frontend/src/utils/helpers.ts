@@ -50,10 +50,6 @@ export const getPriceWithSymbol = (
   return "Invalid price data";
 };
 
-export const stripHtml = (html: string | undefined): string => {
-  return html?.replace(/<[^>]+>/g, "") ?? "";
-};
-
 export const toKebabCase = (str: string) => {
   return str.toLowerCase().replace(/\s+/g, "-");
 };
